@@ -62,13 +62,22 @@ class Flor(models.Model):
     #Classe intermediária para guardar a quantidade de cada flor em um arranjo
 class ArranjoFlor(models.Model):
 
-    arranjo = models.ForeignKey('Arranjo', on_delete=models.CASCADE)
+    arranjo = models.ForeignKey('Arranjo', on_delete=models.CASCADE, related_name='arranjo_flores')
     flor = models.ForeignKey(Flor, on_delete=models.CASCADE)
     #recebe numeros inteiros positivos
     quantidade = models.PositiveIntegerField(
         default=1,
-    )     
+    )
 
+    #Classe Meta para impedir que a mesma flor seja adicionada mais de uma vez ao mesmo arranjo
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['arranjo', 'flor'],
+            name='flor_unica_por_arranjo'
+            )
+        ]
+    
 
 class Arranjo(models.Model):
     TAMANHO_CHOICES = [
@@ -83,6 +92,7 @@ class Arranjo(models.Model):
     produto = models.OneToOneField(Produto, on_delete=models.CASCADE, related_name='arranjo')
     tamanho = models.CharField(max_length=1, choices=TAMANHO_CHOICES)
     flores = models.ManyToManyField(Flor,  through='ArranjoFlor', related_name='arranjos', blank=True)
+    
 
 
     #Função para determinar a capacidade do arranjo com base no tamanho
@@ -93,17 +103,26 @@ class Arranjo(models.Model):
             'M': 18,
             'G': 24,
         }
-
         return capacidades[self.tamanho]
+    
+#Função para calcular o espaço ocupado pelas flores no arranjo
+    @property
+    def espaco_usado(self):
+        total = Decimal('0')
+        for item in self.arranjo_flores.all():
+            total += (item.flor.espaco_ocupado * item.quantidade)
+        return total
+
+        
     def __str__(self):
         return f"{self.produto.nome} - {self.get_tamanho_display()}"
 
 
-#Classe Meta para impedir que a mesma flor seja adicionada mais de uma vez ao mesmo arranjo
-class Meta:
-    constraints = [
-        models.UniqueConstraint(
-            fields=['arranjo', 'flor'],
-            name='flor_unica_por_arranjo'
-        )
-    ]    
+    def clean(self):
+            # Verifica se a quantidade de flores não excede a capacidade do arranjo
+            if self.espaco_usado > self.arranjo.capacidade:
+                raise ValidationError(f"A quantidade de flores ({self.quantidade}) excede a capacidade do arranjo ({self.arranjo.capacidade}).")
+    
+
+
+  
