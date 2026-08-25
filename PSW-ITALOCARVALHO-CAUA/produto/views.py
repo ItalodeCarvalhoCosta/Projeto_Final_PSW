@@ -1,15 +1,108 @@
-from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render
+from django.urls import reverse
 
 from .models import Categoria, Produto
 
 
-# ==========================
-# CRUD PRODUTO
-# ==========================
+def listar_categorias(request):
+    categorias = Categoria.objects.all()
+
+    return render(
+        request,
+        "produto/listar_categorias.html",
+        {
+            "categorias": categorias
+        }
+    )
+
+
+def detalhe_categoria(request, categoria_id):
+    categoria = get_object_or_404(
+        Categoria,
+        pk=categoria_id
+    )
+
+    return render(
+        request,
+        "produto/detalhe_categoria.html",
+        {
+            "categoria": categoria
+        }
+    )
+
+
+def criar_categoria(request):
+    if request.method == "POST":
+        Categoria.objects.create(
+            nome=request.POST["nome"],
+            descricao=request.POST["descricao"]
+        )
+
+        return HttpResponseRedirect(
+            reverse("produto:listar_categorias")
+        )
+
+    return render(
+        request,
+        "produto/formulario_categoria.html",
+        {
+            "opcoes": Categoria.NOME_CHOICES
+        }
+    )
+
+
+def editar_categoria(request, categoria_id):
+    categoria = get_object_or_404(
+        Categoria,
+        pk=categoria_id
+    )
+
+    if request.method == "POST":
+        categoria.nome = request.POST["nome"]
+        categoria.descricao = request.POST["descricao"]
+        categoria.save()
+
+        return HttpResponseRedirect(
+            reverse(
+                "produto:detalhe_categoria",
+                args=(categoria.id,)
+            )
+        )
+
+    return render(
+        request,
+        "produto/formulario_categoria.html",
+        {
+            "categoria": categoria,
+            "opcoes": Categoria.NOME_CHOICES
+        }
+    )
+
+
+def excluir_categoria(request, categoria_id):
+    categoria = get_object_or_404(
+        Categoria,
+        pk=categoria_id
+    )
+
+    if request.method == "POST":
+        categoria.delete()
+
+        return HttpResponseRedirect(
+            reverse("produto:listar_categorias")
+        )
+
+    return render(
+        request,
+        "produto/excluir_categoria.html",
+        {
+            "categoria": categoria
+        }
+    )
 
 
 def listar_produtos(request):
-
     produtos = Produto.objects.all()
 
     return render(
@@ -21,12 +114,10 @@ def listar_produtos(request):
     )
 
 
-
-def detalhe_produto(request, id):
-
+def detalhe_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
-        id=id
+        pk=produto_id
     )
 
     return render(
@@ -38,56 +129,52 @@ def detalhe_produto(request, id):
     )
 
 
-
 def criar_produto(request):
-
     categorias = Categoria.objects.all()
 
     if request.method == "POST":
-
-        categoria_id = request.POST["categoria"]
-
-        categoria = Categoria.objects.get(
-            id=categoria_id
+        categoria = get_object_or_404(
+            Categoria,
+            pk=request.POST["categoria"]
         )
 
-        Produto.objects.create(
+        produto = Produto.objects.create(
             categoria=categoria,
             nome=request.POST["nome"],
             descricao=request.POST["descricao"],
             preco=request.POST["preco"],
             estoque=request.POST["estoque"],
             peso=request.POST["peso"],
-            imagem=request.FILES["imagem"]
         )
 
-        return redirect("listar_produtos")
-
+        return HttpResponseRedirect(
+            reverse(
+                "produto:detalhe_produto",
+                args=(produto.id,)
+            )
+        )
 
     return render(
         request,
-        "produto/criar_produto.html",
+        "produto/formulario_produto.html",
         {
             "categorias": categorias
         }
     )
 
 
-
-def editar_produto(request, id):
-
+def editar_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
-        id=id
+        pk=produto_id
     )
 
     categorias = Categoria.objects.all()
 
-
     if request.method == "POST":
-
-        produto.categoria = Categoria.objects.get(
-            id=request.POST["categoria"]
+        produto.categoria = get_object_or_404(
+            Categoria,
+            pk=request.POST["categoria"]
         )
 
         produto.nome = request.POST["nome"]
@@ -95,20 +182,18 @@ def editar_produto(request, id):
         produto.preco = request.POST["preco"]
         produto.estoque = request.POST["estoque"]
         produto.peso = request.POST["peso"]
-
-
-        if "imagem" in request.FILES:
-            produto.imagem = request.FILES["imagem"]
-
-
         produto.save()
 
-        return redirect("listar_produtos")
-
+        return HttpResponseRedirect(
+            reverse(
+                "produto:detalhe_produto",
+                args=(produto.id,)
+            )
+        )
 
     return render(
         request,
-        "produto/editar_produto.html",
+        "produto/formulario_produto.html",
         {
             "produto": produto,
             "categorias": categorias
@@ -116,14 +201,23 @@ def editar_produto(request, id):
     )
 
 
-
-def excluir_produto(request, id):
-
+def excluir_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
-        id=id
+        pk=produto_id
     )
 
-    produto.delete()
+    if request.method == "POST":
+        produto.delete()
 
-    return redirect("listar_produtos")
+        return HttpResponseRedirect(
+            reverse("produto:listar_produtos")
+        )
+
+    return render(
+        request,
+        "produto/excluir_produto.html",
+        {
+            "produto": produto
+        }
+    )

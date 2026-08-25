@@ -1,0 +1,1 @@
+<h1>{{ produto.nome }}</h1><p>{{ produto.descricao }}</p><p>Categoria: {{ produto.categoria }}</p><p>Preço: {{ produto.preco }}</p><p>Estoque: {{ produto.estoque }}</p><p>Peso: {{ produto.peso }}</p><a href="{% url 'produto:editar_produto' produto.id %}">Editar</a> <a href="{% url 'produto:excluir_produto' produto.id %}">Excluir</a>
