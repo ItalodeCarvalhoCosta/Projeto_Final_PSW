@@ -1,0 +1,19 @@
+<h1>Pedidos</h1>
+
+<a href="{% url 'pedido:criar_pedido' %}">
+    Criar pedido
+</a>
+
+{% if pedidos %}
+    <ul>
+        {% for pedido in pedidos %}
+            <li>
+                <a href="{% url 'pedido:detalhe_pedido' pedido.id %}">
+                    Pedido {{ pedido.id }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhum pedido cadastrado.</p>
+{% endif %}

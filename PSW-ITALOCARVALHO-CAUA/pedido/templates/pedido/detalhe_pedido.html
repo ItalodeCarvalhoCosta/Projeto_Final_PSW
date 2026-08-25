@@ -1,0 +1,18 @@
+<h1>Pedido {{ pedido.id }}</h1>
+
+<p>Usuário: {{ pedido.usuario }}</p>
+<p>Bairro: {{ pedido.bairro }}</p>
+<p>Rua: {{ pedido.rua }}</p>
+<p>Número: {{ pedido.num_casa }}</p>
+<p>CEP: {{ pedido.cep }}</p>
+<p>Data e hora: {{ pedido.dataHora }}</p>
+<p>Descrição: {{ pedido.descricao_pedido }}</p>
+<p>Valor total: {{ pedido.valorTotal }}</p>
+
+<a href="{% url 'pedido:editar_pedido' pedido.id %}">
+    Editar
+</a>
+
+<a href="{% url 'pedido:excluir_pedido' pedido.id %}">
+    Excluir
+</a>

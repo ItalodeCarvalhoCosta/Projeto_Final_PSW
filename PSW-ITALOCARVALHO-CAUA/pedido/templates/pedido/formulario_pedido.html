@@ -1,0 +1,71 @@
+<h1>
+    {% if pedido %}
+        Editar pedido
+    {% else %}
+        Criar pedido
+    {% endif %}
+</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Usuário:</label>
+    <select name="usuario">
+        {% for usuario in usuarios %}
+            <option
+                value="{{ usuario.id }}"
+                {% if pedido.usuario_id == usuario.id %}selected{% endif %}
+            >
+                {{ usuario }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <br>
+
+    <label>Bairro:</label>
+    <input name="bairro" value="{{ pedido.bairro }}">
+
+    <br>
+
+    <label>Rua:</label>
+    <input name="rua" value="{{ pedido.rua }}">
+
+    <br>
+
+    <label>Número da casa:</label>
+    <input name="num_casa" value="{{ pedido.num_casa }}">
+
+    <br>
+
+    <label>CEP:</label>
+    <input name="cep" value="{{ pedido.cep }}">
+
+    <br>
+
+    <label>Data e hora:</label>
+    <input
+        type="datetime-local"
+        name="dataHora"
+        value="{{ pedido.dataHora|date:'Y-m-d\\TH:i' }}"
+    >
+
+    <br>
+
+    <label>Descrição:</label>
+    <textarea name="descricao_pedido">{{ pedido.descricao_pedido }}</textarea>
+
+    <br>
+
+    <label>Valor total:</label>
+    <input
+        type="number"
+        step="0.01"
+        name="valorTotal"
+        value="{{ pedido.valorTotal }}"
+    >
+
+    <br>
+
+    <input type="submit" value="Salvar">
+</form>
