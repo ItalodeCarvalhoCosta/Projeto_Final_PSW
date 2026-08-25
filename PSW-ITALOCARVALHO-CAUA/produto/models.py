@@ -121,7 +121,7 @@ class Arranjo(models.Model):
     def clean(self):
             # Verifica se a quantidade de flores não excede a capacidade do arranjo
             if self.espaco_usado > self.arranjo.capacidade:
-                raise ValidationError(f"A quantidade de flores ({self.quantidade}) excede a capacidade do arranjo ({self.arranjo.capacidade}).")
+                raise ValidationError(f"A quantidade de flores ({self.espaco_usado}) excede a capacidade do arranjo ({self.arranjo.capacidade}).")
     
 
 

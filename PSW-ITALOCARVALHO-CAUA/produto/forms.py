@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Categoria, Produto
+from .models import Categoria, Produto, Flor, Arranjo, ArranjoFlor
 
 
 class CategoriaForm(forms.ModelForm):
@@ -50,4 +50,43 @@ class ProdutoForm(forms.ModelForm):
                     "step": "0.01"
                 }
             )
+        }
+
+
+class FlorForm(forms.ModelForm):
+    class Meta:
+        model = Flor
+
+        fields =[
+            "tamanho"
+            ]
+
+        labels = {
+            "tamanho": "Tamanho da flor"
+        }
+class ArranjoForm(forms.ModelForm):
+    class Meta:
+        model = Arranjo
+
+        fields =[
+            "tamanho"
+            ]
+
+        labels = {
+            "tamanho": "Tamanho do arranjo"
+        }
+
+class ArranjoFlorForm(forms.ModelForm):
+
+    class Meta:
+        model = ArranjoFlor
+
+        fields = [
+            "flor"
+            "quantidade"
+        ]
+
+        labels = {
+            "flor": "Flor",
+            "quantidade": "Quantidade"
         }
