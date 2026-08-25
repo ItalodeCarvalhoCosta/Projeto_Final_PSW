@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuários</title>
+</head>
+<body>
+    {% if pagina == "listar" %}
+        <h1>Usuários</h1>
+        <a href="{% url 'usuario:criar_usuario' %}">Criar usuário</a>
+        {% if usuarios %}
+            <ul>
+                {% for usuario in usuarios %}
+                    <li><a href="{% url 'usuario:detalhe_usuario' usuario.id %}">{{ usuario.username }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum usuário cadastrado.</p>
+        {% endif %}
+
+    {% elif pagina == "detalhe" %}
+        <h1>{{ usuario.username }}</h1>
+        <p>Nome: {{ usuario.first_name }}</p>
+        <p>Sobrenome: {{ usuario.last_name }}</p>
+        <p>E-mail: {{ usuario.email }}</p>
+        <p>CPF: {{ usuario.cpf }}</p>
+        <p>Telefone: {{ usuario.telefone }}</p>
+        <a href="{% url 'usuario:editar_usuario' usuario.id %}">Editar</a>
+        <a href="{% url 'usuario:excluir_usuario' usuario.id %}">Excluir</a>
+
+    {% elif pagina == "formulario" %}
+        <h1>{% if usuario %}Editar{% else %}Criar{% endif %} usuário</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Salvar">
+        </form>
+
+    {% elif pagina == "excluir" %}
+        <h1>Excluir {{ usuario.username }}?</h1>
+        <form method="post">
+            {% csrf_token %}
+            <input type="submit" value="Confirmar exclusão">
+        </form>
+    {% endif %}
+</body>
+</html>

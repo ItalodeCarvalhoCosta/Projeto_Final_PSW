@@ -5,15 +5,18 @@ from django.urls import reverse
 from .forms import CriarUsuarioForm, UsuarioForm
 from .models import Usuario
 
+TEMPLATE_USUARIO = "usuario/usuario.html"
+
 
 def listar_usuarios(request):
     usuarios = Usuario.objects.all()
 
     return render(
         request,
-        "usuario/listar_usuarios.html",
+        TEMPLATE_USUARIO,
         {
-            "usuarios": usuarios
+            "pagina": "listar",
+            "usuarios": usuarios,
         }
     )
 
@@ -26,9 +29,10 @@ def detalhe_usuario(request, usuario_id):
 
     return render(
         request,
-        "usuario/detalhe_usuario.html",
+        TEMPLATE_USUARIO,
         {
-            "usuario": usuario
+            "pagina": "detalhe",
+            "usuario": usuario,
         }
     )
 
@@ -46,8 +50,8 @@ def criar_usuario(request):
 
     return render(
         request,
-        "usuario/formulario_usuario.html",
-        {"form": form}
+        TEMPLATE_USUARIO,
+        {"pagina": "formulario", "form": form}
     )
 
 
@@ -69,8 +73,9 @@ def editar_usuario(request, usuario_id):
 
     return render(
         request,
-        "usuario/formulario_usuario.html",
+        TEMPLATE_USUARIO,
         {
+            "pagina": "formulario",
             "usuario": usuario,
             "form": form,
         }
@@ -92,8 +97,9 @@ def excluir_usuario(request, usuario_id):
 
     return render(
         request,
-        "usuario/excluir_usuario.html",
+        TEMPLATE_USUARIO,
         {
-            "usuario": usuario
+            "pagina": "excluir",
+            "usuario": usuario,
         }
     )

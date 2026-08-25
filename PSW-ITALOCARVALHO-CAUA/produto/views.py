@@ -5,15 +5,18 @@ from django.urls import reverse
 from .forms import CategoriaForm, ProdutoForm
 from .models import Categoria, Produto
 
+TEMPLATE_PRODUTO = "produto/produto.html"
+
 
 def listar_categorias(request):
     categorias = Categoria.objects.all()
 
     return render(
         request,
-        "produto/listar_categorias.html",
+        TEMPLATE_PRODUTO,
         {
-            "categorias": categorias
+            "pagina": "listar_categorias",
+            "categorias": categorias,
         }
     )
 
@@ -26,9 +29,10 @@ def detalhe_categoria(request, categoria_id):
 
     return render(
         request,
-        "produto/detalhe_categoria.html",
+        TEMPLATE_PRODUTO,
         {
-            "categoria": categoria
+            "pagina": "detalhe_categoria",
+            "categoria": categoria,
         }
     )
 
@@ -43,8 +47,8 @@ def criar_categoria(request):
 
     return render(
         request,
-        "produto/formulario_categoria.html",
-        {"form": form}
+        TEMPLATE_PRODUTO,
+        {"pagina": "formulario_categoria", "form": form}
     )
 
 
@@ -66,8 +70,9 @@ def editar_categoria(request, categoria_id):
 
     return render(
         request,
-        "produto/formulario_categoria.html",
+        TEMPLATE_PRODUTO,
         {
+            "pagina": "formulario_categoria",
             "categoria": categoria,
             "form": form,
         }
@@ -89,9 +94,10 @@ def excluir_categoria(request, categoria_id):
 
     return render(
         request,
-        "produto/excluir_categoria.html",
+        TEMPLATE_PRODUTO,
         {
-            "categoria": categoria
+            "pagina": "excluir_categoria",
+            "categoria": categoria,
         }
     )
 
@@ -101,9 +107,10 @@ def listar_produtos(request):
 
     return render(
         request,
-        "produto/listar_produtos.html",
+        TEMPLATE_PRODUTO,
         {
-            "produtos": produtos
+            "pagina": "listar_produtos",
+            "produtos": produtos,
         }
     )
 
@@ -116,9 +123,10 @@ def detalhe_produto(request, produto_id):
 
     return render(
         request,
-        "produto/detalhe_produto.html",
+        TEMPLATE_PRODUTO,
         {
-            "produto": produto
+            "pagina": "detalhe_produto",
+            "produto": produto,
         }
     )
 
@@ -136,8 +144,8 @@ def criar_produto(request):
 
     return render(
         request,
-        "produto/formulario_produto.html",
-        {"form": form}
+        TEMPLATE_PRODUTO,
+        {"pagina": "formulario_produto", "form": form}
     )
 
 
@@ -159,8 +167,9 @@ def editar_produto(request, produto_id):
 
     return render(
         request,
-        "produto/formulario_produto.html",
+        TEMPLATE_PRODUTO,
         {
+            "pagina": "formulario_produto",
             "produto": produto,
             "form": form,
         }
@@ -182,8 +191,9 @@ def excluir_produto(request, produto_id):
 
     return render(
         request,
-        "produto/excluir_produto.html",
+        TEMPLATE_PRODUTO,
         {
-            "produto": produto
+            "pagina": "excluir_produto",
+            "produto": produto,
         }
     )

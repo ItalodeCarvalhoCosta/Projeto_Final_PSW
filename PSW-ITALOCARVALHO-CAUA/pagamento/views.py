@@ -5,15 +5,18 @@ from django.urls import reverse
 from .forms import PagamentoForm
 from .models import Pagamento
 
+TEMPLATE_PAGAMENTO = "pagamento/pagamento.html"
+
 
 def listar_pagamentos(request):
     pagamentos = Pagamento.objects.all()
 
     return render(
         request,
-        "pagamento/listar_pagamentos.html",
+        TEMPLATE_PAGAMENTO,
         {
-            "pagamentos": pagamentos
+            "pagina": "listar",
+            "pagamentos": pagamentos,
         }
     )
 
@@ -26,9 +29,10 @@ def detalhe_pagamento(request, pagamento_id):
 
     return render(
         request,
-        "pagamento/detalhe_pagamento.html",
+        TEMPLATE_PAGAMENTO,
         {
-            "pagamento": pagamento
+            "pagina": "detalhe",
+            "pagamento": pagamento,
         }
     )
 
@@ -46,8 +50,8 @@ def criar_pagamento(request):
 
     return render(
         request,
-        "pagamento/formulario_pagamento.html",
-        {"form": form}
+        TEMPLATE_PAGAMENTO,
+        {"pagina": "formulario", "form": form}
     )
 
 
@@ -69,8 +73,9 @@ def editar_pagamento(request, pagamento_id):
 
     return render(
         request,
-        "pagamento/formulario_pagamento.html",
+        TEMPLATE_PAGAMENTO,
         {
+            "pagina": "formulario",
             "pagamento": pagamento,
             "form": form,
         }
@@ -92,8 +97,9 @@ def excluir_pagamento(request, pagamento_id):
 
     return render(
         request,
-        "pagamento/excluir_pagamento.html",
+        TEMPLATE_PAGAMENTO,
         {
-            "pagamento": pagamento
+            "pagina": "excluir",
+            "pagamento": pagamento,
         }
     )

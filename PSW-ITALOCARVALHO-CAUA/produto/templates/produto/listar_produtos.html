@@ -1,2 +1,0 @@
-<h1>Produtos</h1><a href="{% url 'produto:criar_produto' %}">Criar produto</a> <a href="{% url 'produto:listar_categorias' %}">Categorias</a>
-{% if produtos %}<ul>{% for produto in produtos %}<li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome }}</a></li>{% endfor %}</ul>{% else %}<p>Nenhum produto cadastrado.</p>{% endif %}

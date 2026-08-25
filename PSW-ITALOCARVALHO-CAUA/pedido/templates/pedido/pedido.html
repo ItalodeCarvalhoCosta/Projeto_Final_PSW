@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos</title>
+</head>
+<body>
+    {% if pagina == "listar" %}
+        <h1>Pedidos</h1>
+        <a href="{% url 'pedido:criar_pedido' %}">Criar pedido</a>
+        {% if pedidos %}
+            <ul>
+                {% for pedido in pedidos %}
+                    <li><a href="{% url 'pedido:detalhe_pedido' pedido.id %}">Pedido {{ pedido.id }}</a></li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhum pedido cadastrado.</p>
+        {% endif %}
+
+    {% elif pagina == "detalhe" %}
+        <h1>Pedido {{ pedido.id }}</h1>
+        <p>Usuário: {{ pedido.usuario }}</p>
+        <p>Bairro: {{ pedido.bairro }}</p>
+        <p>Rua: {{ pedido.rua }}</p>
+        <p>Número: {{ pedido.num_casa }}</p>
+        <p>CEP: {{ pedido.cep }}</p>
+        <p>Data e hora: {{ pedido.dataHora }}</p>
+        <p>Descrição: {{ pedido.descricao_pedido }}</p>
+        <p>Valor total: {{ pedido.valorTotal }}</p>
+        <a href="{% url 'pedido:editar_pedido' pedido.id %}">Editar</a>
+        <a href="{% url 'pedido:excluir_pedido' pedido.id %}">Excluir</a>
+
+    {% elif pagina == "formulario" %}
+        <h1>{% if pedido %}Editar{% else %}Criar{% endif %} pedido</h1>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Salvar">
+        </form>
+
+    {% elif pagina == "excluir" %}
+        <h1>Excluir pedido {{ pedido.id }}?</h1>
+        <form method="post">
+            {% csrf_token %}
+            <input type="submit" value="Confirmar exclusão">
+        </form>
+    {% endif %}
+</body>
+</html>

@@ -5,15 +5,18 @@ from django.urls import reverse
 from .forms import PedidoForm
 from .models import Pedido
 
+TEMPLATE_PEDIDO = "pedido/pedido.html"
+
 
 def listar_pedidos(request):
     pedidos = Pedido.objects.all()
 
     return render(
         request,
-        "pedido/listar_pedidos.html",
+        TEMPLATE_PEDIDO,
         {
-            "pedidos": pedidos
+            "pagina": "listar",
+            "pedidos": pedidos,
         }
     )
 
@@ -26,9 +29,10 @@ def detalhe_pedido(request, pedido_id):
 
     return render(
         request,
-        "pedido/detalhe_pedido.html",
+        TEMPLATE_PEDIDO,
         {
-            "pedido": pedido
+            "pagina": "detalhe",
+            "pedido": pedido,
         }
     )
 
@@ -46,8 +50,8 @@ def criar_pedido(request):
 
     return render(
         request,
-        "pedido/formulario_pedido.html",
-        {"form": form}
+        TEMPLATE_PEDIDO,
+        {"pagina": "formulario", "form": form}
     )
 
 
@@ -69,8 +73,9 @@ def editar_pedido(request, pedido_id):
 
     return render(
         request,
-        "pedido/formulario_pedido.html",
+        TEMPLATE_PEDIDO,
         {
+            "pagina": "formulario",
             "pedido": pedido,
             "form": form,
         }
@@ -92,8 +97,9 @@ def excluir_pedido(request, pedido_id):
 
     return render(
         request,
-        "pedido/excluir_pedido.html",
+        TEMPLATE_PEDIDO,
         {
-            "pedido": pedido
+            "pagina": "excluir",
+            "pedido": pedido,
         }
     )

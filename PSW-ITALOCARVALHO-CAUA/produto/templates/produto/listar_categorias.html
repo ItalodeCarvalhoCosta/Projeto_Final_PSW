@@ -1,3 +1,0 @@
-<h1>Categorias</h1>
-<a href="{% url 'produto:criar_categoria' %}">Criar categoria</a>
-{% if categorias %}<ul>{% for categoria in categorias %}<li><a href="{% url 'produto:detalhe_categoria' categoria.id %}">{{ categoria.nome }}</a></li>{% endfor %}</ul>{% else %}<p>Nenhuma categoria cadastrada.</p>{% endif %}
