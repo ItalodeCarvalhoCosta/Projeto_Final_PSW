@@ -1,1 +1,6 @@
-<h1>{% if categoria %}Editar{% else %}Criar{% endif %} categoria</h1><form method="post">{% csrf_token %}<label>Nome: <select name="nome">{% for valor, nome in opcoes %}<option value="{{ valor }}" {% if categoria.nome == valor %}selected{% endif %}>{{ nome }}</option>{% endfor %}</select></label><br><label>Descrição: <textarea name="descricao">{{ categoria.descricao }}</textarea></label><br><input type="submit" value="Salvar"></form>
+<h1>{% if categoria %}Editar{% else %}Criar{% endif %} categoria</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Salvar">
+</form>

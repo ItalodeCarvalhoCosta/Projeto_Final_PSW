@@ -1,8 +1,8 @@
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
+from .forms import CriarUsuarioForm, UsuarioForm
 from .models import Usuario
 
 
@@ -34,20 +34,9 @@ def detalhe_usuario(request, usuario_id):
 
 
 def criar_usuario(request):
-    users = User.objects.all()
-
-    if request.method == "POST":
-        user = get_object_or_404(
-            User,
-            pk=request.POST["user"]
-        )
-
-        usuario = Usuario.objects.create(
-            user=user,
-            cpf=request.POST["cpf"],
-            telefone=request.POST["telefone"]
-        )
-
+    form = CriarUsuarioForm(request.POST or None)
+    if form.is_valid():
+        usuario = form.save()
         return HttpResponseRedirect(
             reverse(
                 "usuario:detalhe_usuario",
@@ -58,9 +47,7 @@ def criar_usuario(request):
     return render(
         request,
         "usuario/formulario_usuario.html",
-        {
-            "users": users
-        }
+        {"form": form}
     )
 
 
@@ -70,18 +57,9 @@ def editar_usuario(request, usuario_id):
         pk=usuario_id
     )
 
-    users = User.objects.all()
-
-    if request.method == "POST":
-        usuario.user = get_object_or_404(
-            User,
-            pk=request.POST["user"]
-        )
-
-        usuario.cpf = request.POST["cpf"]
-        usuario.telefone = request.POST["telefone"]
-        usuario.save()
-
+    form = UsuarioForm(request.POST or None, instance=usuario)
+    if form.is_valid():
+        usuario = form.save()
         return HttpResponseRedirect(
             reverse(
                 "usuario:detalhe_usuario",
@@ -94,7 +72,7 @@ def editar_usuario(request, usuario_id):
         "usuario/formulario_usuario.html",
         {
             "usuario": usuario,
-            "users": users
+            "form": form,
         }
     )
 

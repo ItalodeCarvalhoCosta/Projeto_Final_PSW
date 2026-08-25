@@ -9,7 +9,7 @@
         {% for usuario in usuarios %}
             <li>
                 <a href="{% url 'usuario:detalhe_usuario' usuario.id %}">
-                    {{ usuario.user.username }}
+                    {{ usuario.username }}
                 </a>
             </li>
         {% endfor %}

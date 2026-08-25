@@ -8,46 +8,6 @@
 
 <form method="post">
     {% csrf_token %}
-
-    <label>Pedido:</label>
-    <select name="pedido">
-        {% for pedido in pedidos %}
-            <option
-                value="{{ pedido.id }}"
-                {% if pagamento.pedido_id == pedido.id %}selected{% endif %}
-            >
-                Pedido {{ pedido.id }}
-            </option>
-        {% endfor %}
-    </select>
-
-    <br>
-
-    <label>Forma de pagamento:</label>
-    <input
-        name="formaPagamento"
-        value="{{ pagamento.formaPagamento }}"
-    >
-
-    <br>
-
-    <label>Valor:</label>
-    <input
-        type="number"
-        step="0.01"
-        name="valor"
-        value="{{ pagamento.valor }}"
-    >
-
-    <br>
-
-    <label>Status:</label>
-    <input
-        name="statusPagamento"
-        value="{{ pagamento.statusPagamento }}"
-    >
-
-    <br>
-
+    {{ form.as_p }}
     <input type="submit" value="Salvar">
 </form>

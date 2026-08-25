@@ -2,6 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
+from .forms import CategoriaForm, ProdutoForm
 from .models import Categoria, Produto
 
 
@@ -33,12 +34,9 @@ def detalhe_categoria(request, categoria_id):
 
 
 def criar_categoria(request):
-    if request.method == "POST":
-        Categoria.objects.create(
-            nome=request.POST["nome"],
-            descricao=request.POST["descricao"]
-        )
-
+    form = CategoriaForm(request.POST or None)
+    if form.is_valid():
+        form.save()
         return HttpResponseRedirect(
             reverse("produto:listar_categorias")
         )
@@ -46,9 +44,7 @@ def criar_categoria(request):
     return render(
         request,
         "produto/formulario_categoria.html",
-        {
-            "opcoes": Categoria.NOME_CHOICES
-        }
+        {"form": form}
     )
 
 
@@ -58,11 +54,9 @@ def editar_categoria(request, categoria_id):
         pk=categoria_id
     )
 
-    if request.method == "POST":
-        categoria.nome = request.POST["nome"]
-        categoria.descricao = request.POST["descricao"]
-        categoria.save()
-
+    form = CategoriaForm(request.POST or None, instance=categoria)
+    if form.is_valid():
+        categoria = form.save()
         return HttpResponseRedirect(
             reverse(
                 "produto:detalhe_categoria",
@@ -75,7 +69,7 @@ def editar_categoria(request, categoria_id):
         "produto/formulario_categoria.html",
         {
             "categoria": categoria,
-            "opcoes": Categoria.NOME_CHOICES
+            "form": form,
         }
     )
 
@@ -130,23 +124,9 @@ def detalhe_produto(request, produto_id):
 
 
 def criar_produto(request):
-    categorias = Categoria.objects.all()
-
-    if request.method == "POST":
-        categoria = get_object_or_404(
-            Categoria,
-            pk=request.POST["categoria"]
-        )
-
-        produto = Produto.objects.create(
-            categoria=categoria,
-            nome=request.POST["nome"],
-            descricao=request.POST["descricao"],
-            preco=request.POST["preco"],
-            estoque=request.POST["estoque"],
-            peso=request.POST["peso"],
-        )
-
+    form = ProdutoForm(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        produto = form.save()
         return HttpResponseRedirect(
             reverse(
                 "produto:detalhe_produto",
@@ -157,9 +137,7 @@ def criar_produto(request):
     return render(
         request,
         "produto/formulario_produto.html",
-        {
-            "categorias": categorias
-        }
+        {"form": form}
     )
 
 
@@ -169,21 +147,9 @@ def editar_produto(request, produto_id):
         pk=produto_id
     )
 
-    categorias = Categoria.objects.all()
-
-    if request.method == "POST":
-        produto.categoria = get_object_or_404(
-            Categoria,
-            pk=request.POST["categoria"]
-        )
-
-        produto.nome = request.POST["nome"]
-        produto.descricao = request.POST["descricao"]
-        produto.preco = request.POST["preco"]
-        produto.estoque = request.POST["estoque"]
-        produto.peso = request.POST["peso"]
-        produto.save()
-
+    form = ProdutoForm(request.POST or None, request.FILES or None, instance=produto)
+    if form.is_valid():
+        produto = form.save()
         return HttpResponseRedirect(
             reverse(
                 "produto:detalhe_produto",
@@ -196,7 +162,7 @@ def editar_produto(request, produto_id):
         "produto/formulario_produto.html",
         {
             "produto": produto,
-            "categorias": categorias
+            "form": form,
         }
     )
 

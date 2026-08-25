@@ -2,8 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from usuario.models import Usuario
-
+from .forms import PedidoForm
 from .models import Pedido
 
 
@@ -35,25 +34,9 @@ def detalhe_pedido(request, pedido_id):
 
 
 def criar_pedido(request):
-    usuarios = Usuario.objects.all()
-
-    if request.method == "POST":
-        usuario = get_object_or_404(
-            Usuario,
-            pk=request.POST["usuario"]
-        )
-
-        pedido = Pedido.objects.create(
-            usuario=usuario,
-            bairro=request.POST["bairro"],
-            rua=request.POST["rua"],
-            num_casa=request.POST["num_casa"],
-            cep=request.POST["cep"],
-            dataHora=request.POST["dataHora"],
-            descricao_pedido=request.POST["descricao_pedido"],
-            valorTotal=request.POST["valorTotal"]
-        )
-
+    form = PedidoForm(request.POST or None)
+    if form.is_valid():
+        pedido = form.save()
         return HttpResponseRedirect(
             reverse(
                 "pedido:detalhe_pedido",
@@ -64,9 +47,7 @@ def criar_pedido(request):
     return render(
         request,
         "pedido/formulario_pedido.html",
-        {
-            "usuarios": usuarios
-        }
+        {"form": form}
     )
 
 
@@ -76,23 +57,9 @@ def editar_pedido(request, pedido_id):
         pk=pedido_id
     )
 
-    usuarios = Usuario.objects.all()
-
-    if request.method == "POST":
-        pedido.usuario = get_object_or_404(
-            Usuario,
-            pk=request.POST["usuario"]
-        )
-
-        pedido.bairro = request.POST["bairro"]
-        pedido.rua = request.POST["rua"]
-        pedido.num_casa = request.POST["num_casa"]
-        pedido.cep = request.POST["cep"]
-        pedido.dataHora = request.POST["dataHora"]
-        pedido.descricao_pedido = request.POST["descricao_pedido"]
-        pedido.valorTotal = request.POST["valorTotal"]
-        pedido.save()
-
+    form = PedidoForm(request.POST or None, instance=pedido)
+    if form.is_valid():
+        pedido = form.save()
         return HttpResponseRedirect(
             reverse(
                 "pedido:detalhe_pedido",
@@ -105,7 +72,7 @@ def editar_pedido(request, pedido_id):
         "pedido/formulario_pedido.html",
         {
             "pedido": pedido,
-            "usuarios": usuarios
+            "form": form,
         }
     )
 

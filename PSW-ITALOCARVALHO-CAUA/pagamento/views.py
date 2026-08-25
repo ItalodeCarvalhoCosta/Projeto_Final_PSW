@@ -2,8 +2,7 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 
-from pedido.models import Pedido
-
+from .forms import PagamentoForm
 from .models import Pagamento
 
 
@@ -35,21 +34,9 @@ def detalhe_pagamento(request, pagamento_id):
 
 
 def criar_pagamento(request):
-    pedidos = Pedido.objects.all()
-
-    if request.method == "POST":
-        pedido = get_object_or_404(
-            Pedido,
-            pk=request.POST["pedido"]
-        )
-
-        pagamento = Pagamento.objects.create(
-            pedido=pedido,
-            formaPagamento=request.POST["formaPagamento"],
-            valor=request.POST["valor"],
-            statusPagamento=request.POST["statusPagamento"]
-        )
-
+    form = PagamentoForm(request.POST or None)
+    if form.is_valid():
+        pagamento = form.save()
         return HttpResponseRedirect(
             reverse(
                 "pagamento:detalhe_pagamento",
@@ -60,9 +47,7 @@ def criar_pagamento(request):
     return render(
         request,
         "pagamento/formulario_pagamento.html",
-        {
-            "pedidos": pedidos
-        }
+        {"form": form}
     )
 
 
@@ -72,19 +57,9 @@ def editar_pagamento(request, pagamento_id):
         pk=pagamento_id
     )
 
-    pedidos = Pedido.objects.all()
-
-    if request.method == "POST":
-        pagamento.pedido = get_object_or_404(
-            Pedido,
-            pk=request.POST["pedido"]
-        )
-
-        pagamento.formaPagamento = request.POST["formaPagamento"]
-        pagamento.valor = request.POST["valor"]
-        pagamento.statusPagamento = request.POST["statusPagamento"]
-        pagamento.save()
-
+    form = PagamentoForm(request.POST or None, instance=pagamento)
+    if form.is_valid():
+        pagamento = form.save()
         return HttpResponseRedirect(
             reverse(
                 "pagamento:detalhe_pagamento",
@@ -97,7 +72,7 @@ def editar_pagamento(request, pagamento_id):
         "pagamento/formulario_pagamento.html",
         {
             "pagamento": pagamento,
-            "pedidos": pedidos
+            "form": form,
         }
     )
 
