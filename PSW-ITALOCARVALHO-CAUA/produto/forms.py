@@ -1,92 +1,60 @@
 from django import forms
-
-from .models import Categoria, Produto, Flor, Arranjo, ArranjoFlor
+from .models import Categoria, Produto
 
 
 class CategoriaForm(forms.ModelForm):
+
     class Meta:
+
         model = Categoria
+
         fields = [
-            "nome",
-            "descricao"
+            "nome_categoria",
+            "descricao_categoria"
         ]
 
         labels = {
-            "nome": "Nome",
-            "descricao": "Descrição"
+            "nome_categoria": "Nome",
+            "descricao_categoria": "Descrição"
         }
 
 
+
 class ProdutoForm(forms.ModelForm):
+
     class Meta:
+
         model = Produto
+
         fields = [
             "categoria",
-            "nome",
-            "descricao",
-            "preco",
-            "estoque",
+            "nome_produto",
+            "descricao_produto",
+            "precoUnitario",
+            "quantidadeEstoque",
             "peso",
-            "imagem"
         ]
 
         labels = {
             "categoria": "Categoria",
-            "nome": "Nome",
-            "descricao": "Descrição",
-            "preco": "Preço",
-            "estoque": "Estoque",
+            "nome_produto": "Nome",
+            "descricaoproduto": "Descrição",
+            "precoUnitario": "Preço (uni)",
+            "quantidadeEstoque": "Estoque",
             "peso": "Peso",
-            "imagem": "Imagem",
         }
+
         widgets = {
-            "preco": forms.NumberInput(
+
+            "precoUnitario": forms.NumberInput(
                 attrs={
                     "step": "0.01"
                 }
             ),
+
             "peso": forms.NumberInput(
                 attrs={
                     "step": "0.01"
                 }
             )
-        }
-
-
-class FlorForm(forms.ModelForm):
-    class Meta:
-        model = Flor
-
-        fields =[
-            "tamanho"
-            ]
-
-        labels = {
-            "tamanho": "Tamanho da flor"
-        }
-class ArranjoForm(forms.ModelForm):
-    class Meta:
-        model = Arranjo
-
-        fields =[
-            "tamanho"
-            ]
-
-        labels = {
-            "tamanho": "Tamanho do arranjo"
-        }
-
-class ArranjoFlorForm(forms.ModelForm):
-
-    class Meta:
-        model = ArranjoFlor
-
-        fields = [
-            "flor"
-            "quantidade"
-        ]
-
-        labels = {
-            "flor": "Flor",
-            "quantidade": "Quantidade"
         }

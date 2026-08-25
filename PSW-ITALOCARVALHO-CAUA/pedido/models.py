@@ -34,7 +34,6 @@ class Pedido(models.Model):
 
 
 class ItemPedido(models.Model):
-    id_itemPedido = models.AutoField(primary_key=True)
 
     produto = models.ForeignKey(
         Produto,
@@ -55,7 +54,7 @@ class ItemPedido(models.Model):
         decimal_places=2
     )
 
-    valorUnit = models.DecimalField(
+    valorUnitario = models.DecimalField(
         max_digits=10,
         decimal_places=2
     )
