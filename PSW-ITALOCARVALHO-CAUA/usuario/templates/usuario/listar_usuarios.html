@@ -1,0 +1,19 @@
+<h1>Usuários</h1>
+
+<a href="{% url 'usuario:criar_usuario' %}">
+    Criar usuário
+</a>
+
+{% if usuarios %}
+    <ul>
+        {% for usuario in usuarios %}
+            <li>
+                <a href="{% url 'usuario:detalhe_usuario' usuario.id %}">
+                    {{ usuario.user.username }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhum usuário cadastrado.</p>
+{% endif %}

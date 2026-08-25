@@ -1,0 +1,15 @@
+<h1>{{ usuario.user.username }}</h1>
+
+<p>Nome: {{ usuario.user.first_name }}</p>
+<p>Sobrenome: {{ usuario.user.last_name }}</p>
+<p>E-mail: {{ usuario.user.email }}</p>
+<p>CPF: {{ usuario.cpf }}</p>
+<p>Telefone: {{ usuario.telefone }}</p>
+
+<a href="{% url 'usuario:editar_usuario' usuario.id %}">
+    Editar
+</a>
+
+<a href="{% url 'usuario:excluir_usuario' usuario.id %}">
+    Excluir
+</a>

@@ -1,0 +1,10 @@
+<h1>Excluir pagamento {{ pagamento.id }}?</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <input
+        type="submit"
+        value="Confirmar exclusão"
+    >
+</form>

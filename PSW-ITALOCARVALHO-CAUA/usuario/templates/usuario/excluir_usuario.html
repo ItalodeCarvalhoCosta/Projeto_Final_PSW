@@ -1,0 +1,10 @@
+<h1>Excluir {{ usuario.user.username }}?</h1>
+
+<form method="post">
+    {% csrf_token %}
+
+    <input
+        type="submit"
+        value="Confirmar exclusão"
+    >
+</form>

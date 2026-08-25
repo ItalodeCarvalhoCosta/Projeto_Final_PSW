@@ -1,0 +1,47 @@
+<h1>
+    {% if usuario %}
+        Editar usuário
+    {% else %}
+        Criar usuário
+    {% endif %}
+</h1>
+
+<p>
+    O usuário de autenticação deve ser criado primeiro no painel administrativo.
+</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <label>Usuário:</label>
+    <select name="user">
+        {% for user in users %}
+            <option
+                value="{{ user.id }}"
+                {% if usuario.user_id == user.id %}selected{% endif %}
+            >
+                {{ user.username }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <br>
+
+    <label>CPF:</label>
+    <input
+        name="cpf"
+        value="{{ usuario.cpf }}"
+    >
+
+    <br>
+
+    <label>Telefone:</label>
+    <input
+        name="telefone"
+        value="{{ usuario.telefone }}"
+    >
+
+    <br>
+
+    <input type="submit" value="Salvar">
+</form>

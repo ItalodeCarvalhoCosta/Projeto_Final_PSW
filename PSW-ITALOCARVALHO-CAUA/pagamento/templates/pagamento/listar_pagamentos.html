@@ -1,0 +1,19 @@
+<h1>Pagamentos</h1>
+
+<a href="{% url 'pagamento:criar_pagamento' %}">
+    Criar pagamento
+</a>
+
+{% if pagamentos %}
+    <ul>
+        {% for pagamento in pagamentos %}
+            <li>
+                <a href="{% url 'pagamento:detalhe_pagamento' pagamento.id %}">
+                    Pagamento {{ pagamento.id }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhum pagamento cadastrado.</p>
+{% endif %}
