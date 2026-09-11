@@ -4,6 +4,8 @@ from django.urls import reverse
 
 from .forms import CriarUsuarioForm, UsuarioForm
 from .models import Usuario
+from django.shortcuts import redirect
+from django.contrib.auth import authenticate, login, logout
 
 TEMPLATE_USUARIO = "usuario/usuario.html"
 
@@ -103,3 +105,21 @@ def excluir_usuario(request, usuario_id):
             "usuario": usuario,
         }
     )
+
+
+#login#
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+
+        usuario = authenticate(request, username=username, password=password)
+
+        if usuario is not None:
+            login(request, usuario)
+            return redirect('home:index')
+
+        else:
+            return render(request, 'usuario/login.html', {'error': 'Nome de usuário ou senha inválidos.'})
+
+    return render(request, 'usuario/login.html')
