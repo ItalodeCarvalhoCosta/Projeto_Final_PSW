@@ -117,9 +117,13 @@ def login_view(request):
 
         if usuario is not None:
             login(request, usuario)
-            return redirect('home:index')
+            return redirect('produto:catalogo')
 
         else:
             return render(request, 'usuario/login.html', {'error': 'Nome de usuário ou senha inválidos.'})
 
     return render(request, 'usuario/login.html')
+
+def logout_view(request):
+    logout(request)
+    return redirect("/")

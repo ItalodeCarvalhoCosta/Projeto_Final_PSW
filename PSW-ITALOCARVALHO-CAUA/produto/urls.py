@@ -55,4 +55,9 @@ urlpatterns = [
         views.excluir_produto,
         name="excluir_produto"
     ),
+    path(
+        'catalogo/', 
+        views.catalogo, 
+        name='catalogo'
+        ),
 ]

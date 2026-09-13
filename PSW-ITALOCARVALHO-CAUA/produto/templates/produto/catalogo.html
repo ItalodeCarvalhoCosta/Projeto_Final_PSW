@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo de Produtos</title>
+</head>
+
+<body>
+
+    <h1>Catálogo de Produtos</h1>
+
+    {% for produto in produtos %}
+
+        <div>
+            <h2>{{ produto.nome_produto }}</h2>
+
+            <p>
+                Categoria:
+                {{ produto.categoria }}
+            </p>
+
+            <p>
+                {{ produto.descricao_produto }}
+            </p>
+
+            <p>
+                R$ {{ produto.precoUnitario }}
+            </p>
+
+            {% if produto.quantidadeEstoque > 0 %}
+                <p>Em estoque</p>
+            {% else %}
+                <p>Produto esgotado</p>
+            {% endif %}
+
+        </div>
+
+        <hr>
+
+    {% empty %}
+
+        <p>Nenhum produto cadastrado.</p>
+
+    {% endfor %}
+
+<a href="{% url 'usuario:logout' %}">Sair</a>
+
+</body>
+
+</html>

@@ -31,4 +31,14 @@ urlpatterns = [
         views.excluir_usuario,
         name="excluir_usuario"
     ),
+    path(
+        "login/", 
+        views.login_view, 
+        name="login"
+        ),
+    path(
+        "logout/",
+        views.logout_view,
+        name="logout"
+    ),
 ]

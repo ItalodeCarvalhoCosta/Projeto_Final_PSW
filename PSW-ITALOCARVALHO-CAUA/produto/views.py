@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .forms import CategoriaForm, ProdutoForm
 from .models import Categoria, Produto
@@ -195,5 +196,18 @@ def excluir_produto(request, produto_id):
         {
             "pagina": "excluir_produto",
             "produto": produto,
+        }
+    )
+
+
+@login_required
+def catalogo(request):
+    produtos = Produto.objects.all()
+
+    return render(
+        request,
+        "produto/catalogo.html",
+        {
+            "produtos": produtos
         }
     )
