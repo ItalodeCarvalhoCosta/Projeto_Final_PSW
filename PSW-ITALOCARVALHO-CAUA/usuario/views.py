@@ -1,7 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-
+from django.contrib.auth.decorators import login_required
 from .forms import CriarUsuarioForm, UsuarioForm
 from .models import Usuario
 from django.shortcuts import redirect
@@ -9,7 +9,8 @@ from django.contrib.auth import authenticate, login, logout
 
 TEMPLATE_USUARIO = "usuario/usuario.html"
 
-
+@login_required
+@permission_required("usuario.view_usuario")
 def listar_usuarios(request):
     usuarios = Usuario.objects.all()
 
@@ -22,7 +23,8 @@ def listar_usuarios(request):
         }
     )
 
-
+@login_required
+@permission_required("usuario.view_usuario")
 def detalhe_usuario(request, usuario_id):
     usuario = get_object_or_404(
         Usuario,
@@ -56,7 +58,8 @@ def criar_usuario(request):
         {"pagina": "formulario", "form": form}
     )
 
-
+@login_required
+@permission_required("usuario.change_usuario")
 def editar_usuario(request, usuario_id):
     usuario = get_object_or_404(
         Usuario,
@@ -83,7 +86,8 @@ def editar_usuario(request, usuario_id):
         }
     )
 
-
+@login_required
+@permission_required("usuario.delete_usuario")
 def excluir_usuario(request, usuario_id):
     usuario = get_object_or_404(
         Usuario,

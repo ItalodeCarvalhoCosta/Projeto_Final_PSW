@@ -9,6 +9,7 @@ from .models import Pedido
 TEMPLATE_PEDIDO = "pedido/pedido.html"
 
 @login_required
+@permission_required("pedido.view_pedido")
 def listar_pedidos(request):
     pedidos = Pedido.objects.filter(usuario=request.user)
 
@@ -20,6 +21,8 @@ def listar_pedidos(request):
         }
     )
 
+@login_required
+@permission_required("pedido.view_pedido")
 def detalhe_pedido(request, pedido_id):
     pedido = get_object_or_404(
         Pedido,
@@ -35,7 +38,8 @@ def detalhe_pedido(request, pedido_id):
         }
     )
 
-
+@login_required
+@permission_required("pedido.add_pedido")
 def criar_pedido(request):
     form = PedidoForm(request.POST or None)
     if form.is_valid():
@@ -53,7 +57,8 @@ def criar_pedido(request):
         {"pagina": "formulario", "form": form}
     )
 
-
+@login_required
+@permission_required("pedido.change_pedido")
 def editar_pedido(request, pedido_id):
     pedido = get_object_or_404(
         Pedido,
@@ -80,7 +85,8 @@ def editar_pedido(request, pedido_id):
         }
     )
 
-
+@login_required
+@permission_required("pedido.delete_pedido")
 def excluir_pedido(request, pedido_id):
     pedido = get_object_or_404(
         Pedido,
