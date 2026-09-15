@@ -10,6 +10,69 @@
 
     <h1>Catálogo de Produtos</h1>
 
+    <a href="{% url 'pedido:listar_pedidos' %}">
+        Meus pedidos
+    </a>
+
+    <hr>
+
+    <!-- ÁREA DE TESTE DAS PERMISSÕES -->
+    <h2>Área de teste</h2>
+
+    <p>
+        <a href="{% url 'produto:listar_produtos' %}">
+            Listar produtos
+        </a>
+    </p>
+
+    <p>
+        <a href="{% url 'produto:criar_produto' %}">
+            Criar produto
+        </a>
+    </p>
+
+    <p>
+        <a href="{% url 'produto:listar_categorias' %}">
+            Listar categorias
+        </a>
+    </p>
+
+    <p>
+        <a href="{% url 'produto:criar_categoria' %}">
+            Criar categoria
+        </a>
+    </p>
+
+    <h3>Editar / excluir produtos</h3>
+
+    {% for produto in produtos %}
+
+        <p>
+            {{ produto.nome_produto }}
+
+            |
+            <a href="{% url 'produto:editar_produto' produto.pk %}">
+                Editar
+            </a>
+
+            |
+            <a href="{% url 'produto:excluir_produto' produto.pk %}">
+                Excluir
+            </a>
+
+            |
+            <a href="{% url 'produto:detalhe_produto' produto.pk %}">
+                Detalhes
+            </a>
+        </p>
+
+    {% endfor %}
+
+    <hr>
+
+
+    <!-- CATÁLOGO NORMAL -->
+
     {% for produto in produtos %}
 
         <div>
@@ -33,7 +96,6 @@
             {% else %}
                 <p>Produto esgotado</p>
             {% endif %}
-
         </div>
 
         <hr>
@@ -44,7 +106,9 @@
 
     {% endfor %}
 
-<a href="{% url 'usuario:logout' %}">Sair</a>
+    <a href="{% url 'usuario:logout' %}">
+        Sair
+    </a>
 
 </body>
 

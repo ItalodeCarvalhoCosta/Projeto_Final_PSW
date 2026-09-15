@@ -1,25 +1,24 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 from .forms import PedidoForm
 from .models import Pedido
 
 TEMPLATE_PEDIDO = "pedido/pedido.html"
 
-
+@login_required
 def listar_pedidos(request):
-    pedidos = Pedido.objects.all()
+    pedidos = Pedido.objects.filter(usuario=request.user)
 
     return render(
         request,
-        TEMPLATE_PEDIDO,
+        "pedido/pedido.html",
         {
-            "pagina": "listar",
             "pedidos": pedidos,
         }
     )
-
 
 def detalhe_pedido(request, pedido_id):
     pedido = get_object_or_404(

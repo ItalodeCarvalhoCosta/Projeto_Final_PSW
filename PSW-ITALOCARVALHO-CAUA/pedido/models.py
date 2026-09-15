@@ -60,4 +60,4 @@ class ItemPedido(models.Model):
     )
 
     def __str__(self):
-        return f"{self.quantidade}x {self.produto.nome} - Pedido {self.pedido_id}"
+        return f"{self.quantidade}x {self.produto.nome_produto} - Pedido {self.pedido_id}"

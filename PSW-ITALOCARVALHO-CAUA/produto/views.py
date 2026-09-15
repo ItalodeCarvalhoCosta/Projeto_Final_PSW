@@ -2,11 +2,24 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
-
+from django.core.exceptions import PermissionDenied  
+from functools import wraps
 from .forms import CategoriaForm, ProdutoForm
 from .models import Categoria, Produto
 
 TEMPLATE_PRODUTO = "produto/produto.html"
+
+# Decorador para permissões de edição e exclusão 
+def staff_required(view_func):
+    @wraps(view_func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_staff:
+            raise PermissionDenied
+
+        return view_func(request, *args, **kwargs)
+
+    return wrapper
+
 
 
 def listar_categorias(request):
@@ -37,7 +50,8 @@ def detalhe_categoria(request, categoria_id):
         }
     )
 
-
+@login_required
+@staff_required
 def criar_categoria(request):
     form = CategoriaForm(request.POST or None)
     if form.is_valid():
@@ -52,6 +66,8 @@ def criar_categoria(request):
         {"pagina": "formulario_categoria", "form": form}
     )
 
+@login_required
+@staff_required
 
 def editar_categoria(request, categoria_id):
     categoria = get_object_or_404(
@@ -79,7 +95,8 @@ def editar_categoria(request, categoria_id):
         }
     )
 
-
+@login_required
+@staff_required
 def excluir_categoria(request, categoria_id):
     categoria = get_object_or_404(
         Categoria,
@@ -131,7 +148,8 @@ def detalhe_produto(request, produto_id):
         }
     )
 
-
+@login_required
+@staff_required
 def criar_produto(request):
     form = ProdutoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
@@ -149,7 +167,8 @@ def criar_produto(request):
         {"pagina": "formulario_produto", "form": form}
     )
 
-
+@login_required
+@staff_required
 def editar_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
@@ -176,7 +195,8 @@ def editar_produto(request, produto_id):
         }
     )
 
-
+@login_required
+@staff_required
 def excluir_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
@@ -203,11 +223,11 @@ def excluir_produto(request, produto_id):
 @login_required
 def catalogo(request):
     produtos = Produto.objects.all()
-
     return render(
         request,
         "produto/catalogo.html",
         {
             "produtos": produtos
+            
         }
     )
