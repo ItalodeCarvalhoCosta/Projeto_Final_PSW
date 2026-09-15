@@ -1,9 +1,7 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
-from django.core.exceptions import PermissionDenied  
-from functools import wraps
+from django.contrib.auth.decorators import login_required, permission_required
 from .forms import CategoriaForm, ProdutoForm
 from .models import Categoria, Produto
 
