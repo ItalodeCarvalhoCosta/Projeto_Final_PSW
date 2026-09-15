@@ -16,67 +16,110 @@
 
     <hr>
 
-    <!-- ÁREA DE TESTE DAS PERMISSÕES -->
-    <h2>Área de teste</h2>
 
-    <p>
-        <a href="{% url 'produto:listar_produtos' %}">
-            Listar produtos
-        </a>
-    </p>
+    <!-- PRODUTOS -->
 
-    <p>
-        <a href="{% url 'produto:criar_produto' %}">
-            Criar produto
-        </a>
-    </p>
+    <h2>Produtos</h2>
 
-    <p>
-        <a href="{% url 'produto:listar_categorias' %}">
-            Listar categorias
-        </a>
-    </p>
-
-    <p>
-        <a href="{% url 'produto:criar_categoria' %}">
-            Criar categoria
-        </a>
-    </p>
-
-    <h3>Editar / excluir produtos</h3>
-
-    {% for produto in produtos %}
-
+    {% if perms.produto.view_produto %}
         <p>
-            {{ produto.nome_produto }}
-
-            |
-            <a href="{% url 'produto:editar_produto' produto.pk %}">
-                Editar
-            </a>
-
-            |
-            <a href="{% url 'produto:excluir_produto' produto.pk %}">
-                Excluir
-            </a>
-
-            |
-            <a href="{% url 'produto:detalhe_produto' produto.pk %}">
-                Detalhes
+            <a href="{% url 'produto:listar_produtos' %}">
+                Listar produtos
             </a>
         </p>
+    {% endif %}
 
-    {% endfor %}
+
+    {% if perms.produto.add_produto %}
+        <p>
+            <a href="{% url 'produto:criar_produto' %}">
+                Criar produto
+            </a>
+        </p>
+    {% endif %}
+
+
+    <!-- CATEGORIAS -->
+
+    <h2>Categorias</h2>
+
+    {% if perms.produto.view_categoria %}
+        <p>
+            <a href="{% url 'produto:listar_categorias' %}">
+                Listar categorias
+            </a>
+        </p>
+    {% endif %}
+
+
+    {% if perms.produto.add_categoria %}
+        <p>
+            <a href="{% url 'produto:criar_categoria' %}">
+                Criar categoria
+            </a>
+        </p>
+    {% endif %}
+
+
+    <hr>
+
+
+    <!-- EDITAR / EXCLUIR PRODUTOS -->
+
+    {% if perms.produto.change_produto or perms.produto.delete_produto %}
+
+        <h2>Gerenciamento de produtos</h2>
+
+        {% for produto in produtos %}
+
+            <p>
+
+                {{ produto.nome_produto }}
+
+                {% if perms.produto.change_produto %}
+                    |
+                    <a href="{% url 'produto:editar_produto' produto.pk %}">
+                        Editar
+                    </a>
+                {% endif %}
+
+
+                {% if perms.produto.delete_produto %}
+                    |
+                    <a href="{% url 'produto:excluir_produto' produto.pk %}">
+                        Excluir
+                    </a>
+                {% endif %}
+
+
+                {% if perms.produto.view_produto %}
+                    |
+                    <a href="{% url 'produto:detalhe_produto' produto.pk %}">
+                        Detalhes
+                    </a>
+                {% endif %}
+
+            </p>
+
+        {% endfor %}
+
+    {% endif %}
+
 
     <hr>
 
 
     <!-- CATÁLOGO NORMAL -->
 
+    <h1>Catálogo</h1>
+
     {% for produto in produtos %}
 
         <div>
-            <h2>{{ produto.nome_produto }}</h2>
+
+            <h2>
+                {{ produto.nome_produto }}
+            </h2>
 
             <p>
                 Categoria:
@@ -96,6 +139,25 @@
             {% else %}
                 <p>Produto esgotado</p>
             {% endif %}
+
+
+            {% if perms.produto.change_produto %}
+
+                <a href="{% url 'produto:editar_produto' produto.pk %}">
+                    Editar
+                </a>
+
+            {% endif %}
+
+
+            {% if perms.produto.delete_produto %}
+
+                <a href="{% url 'produto:excluir_produto' produto.pk %}">
+                    Excluir
+                </a>
+
+            {% endif %}
+
         </div>
 
         <hr>
@@ -105,6 +167,7 @@
         <p>Nenhum produto cadastrado.</p>
 
     {% endfor %}
+
 
     <a href="{% url 'usuario:logout' %}">
         Sair

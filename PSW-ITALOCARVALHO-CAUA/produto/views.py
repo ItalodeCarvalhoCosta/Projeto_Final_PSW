@@ -9,16 +9,7 @@ from .models import Categoria, Produto
 
 TEMPLATE_PRODUTO = "produto/produto.html"
 
-# Decorador para permissões de edição e exclusão 
-def staff_required(view_func):
-    @wraps(view_func)
-    def wrapper(request, *args, **kwargs):
-        if not request.user.is_staff:
-            raise PermissionDenied
 
-        return view_func(request, *args, **kwargs)
-
-    return wrapper
 
 
 
@@ -51,7 +42,6 @@ def detalhe_categoria(request, categoria_id):
     )
 
 @login_required
-@staff_required
 def criar_categoria(request):
     form = CategoriaForm(request.POST or None)
     if form.is_valid():
@@ -67,7 +57,7 @@ def criar_categoria(request):
     )
 
 @login_required
-@staff_required
+
 
 def editar_categoria(request, categoria_id):
     categoria = get_object_or_404(
@@ -96,7 +86,7 @@ def editar_categoria(request, categoria_id):
     )
 
 @login_required
-@staff_required
+
 def excluir_categoria(request, categoria_id):
     categoria = get_object_or_404(
         Categoria,
@@ -149,7 +139,7 @@ def detalhe_produto(request, produto_id):
     )
 
 @login_required
-@staff_required
+
 def criar_produto(request):
     form = ProdutoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
@@ -168,7 +158,7 @@ def criar_produto(request):
     )
 
 @login_required
-@staff_required
+
 def editar_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
@@ -196,7 +186,7 @@ def editar_produto(request, produto_id):
     )
 
 @login_required
-@staff_required
+
 def excluir_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
