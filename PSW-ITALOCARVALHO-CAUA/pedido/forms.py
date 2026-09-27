@@ -40,3 +40,4 @@ class PedidoForm(forms.ModelForm):
                 }
             )
         }
+

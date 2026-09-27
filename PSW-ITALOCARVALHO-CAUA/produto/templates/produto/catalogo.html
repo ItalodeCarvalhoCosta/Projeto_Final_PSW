@@ -1,178 +1,34 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Catálogo de Produtos</title>
-</head>
-
-<body>
-
-    <h1>Catálogo de Produtos</h1>
-
-    <a href="{% url 'pedido:listar_pedidos' %}">
-        Meus pedidos
-    </a>
-
-    <hr>
-
-
-    <!-- PRODUTOS -->
-
-    <h2>Produtos</h2>
-
-    {% if perms.produto.view_produto %}
-        <p>
-            <a href="{% url 'produto:listar_produtos' %}">
-                Listar produtos
-            </a>
-        </p>
-    {% endif %}
-
-
-    {% if perms.produto.add_produto %}
-        <p>
-            <a href="{% url 'produto:criar_produto' %}">
-                Criar produto
-            </a>
-        </p>
-    {% endif %}
-
-
-    <!-- CATEGORIAS -->
-
-    <h2>Categorias</h2>
-
-    {% if perms.produto.view_categoria %}
-        <p>
-            <a href="{% url 'produto:listar_categorias' %}">
-                Listar categorias
-            </a>
-        </p>
-    {% endif %}
-
-
-    {% if perms.produto.add_categoria %}
-        <p>
-            <a href="{% url 'produto:criar_categoria' %}">
-                Criar categoria
-            </a>
-        </p>
-    {% endif %}
-
-
-    <hr>
-
-
-    <!-- EDITAR / EXCLUIR PRODUTOS -->
-
-    {% if perms.produto.change_produto or perms.produto.delete_produto %}
-
-        <h2>Gerenciamento de produtos</h2>
-
-        {% for produto in produtos %}
-
-            <p>
-
-                {{ produto.nome_produto }}
-
-                {% if perms.produto.change_produto %}
-                    |
-                    <a href="{% url 'produto:editar_produto' produto.pk %}">
-                        Editar
-                    </a>
-                {% endif %}
-
-
-                {% if perms.produto.delete_produto %}
-                    |
-                    <a href="{% url 'produto:excluir_produto' produto.pk %}">
-                        Excluir
-                    </a>
-                {% endif %}
-
-
-                {% if perms.produto.view_produto %}
-                    |
-                    <a href="{% url 'produto:detalhe_produto' produto.pk %}">
-                        Detalhes
-                    </a>
-                {% endif %}
-
-            </p>
-
-        {% endfor %}
-
-    {% endif %}
-
-
-    <hr>
-
-
-    <!-- CATÁLOGO NORMAL -->
-
-    <h1>Catálogo</h1>
-
-    {% for produto in produtos %}
-
-        <div>
-
-            <h2>
-                {{ produto.nome_produto }}
-            </h2>
-
-            <p>
-                Categoria:
-                {{ produto.categoria }}
-            </p>
-
-            <p>
-                {{ produto.descricao_produto }}
-            </p>
-
-            <p>
-                R$ {{ produto.precoUnitario }}
-            </p>
-
-            {% if produto.quantidadeEstoque > 0 %}
-                <p>Em estoque</p>
-            {% else %}
-                <p>Produto esgotado</p>
-            {% endif %}
-
-
-            {% if perms.produto.change_produto %}
-
-                <a href="{% url 'produto:editar_produto' produto.pk %}">
-                    Editar
-                </a>
-
-            {% endif %}
-
-
-            {% if perms.produto.delete_produto %}
-
-                <a href="{% url 'produto:excluir_produto' produto.pk %}">
-                    Excluir
-                </a>
-
-            {% endif %}
-
+{% extends "home/base.html" %}
+{% block title %}Catálogo | Floricultura{% endblock %}
+{% block content %}
+<p class="eyebrow">Um carinho que floresce</p>
+<h1>Nosso catálogo</h1>
+<p>Escolha um pouco de natureza para fazer parte do seu dia.</p>
+{% if perms.produto.add_produto or perms.produto.view_categoria or perms.produto.add_categoria %}
+<nav class="toolbar" aria-label="Gerenciamento do catálogo">
+    <strong>Gerenciar catálogo</strong>
+    {% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Novo produto</a>{% endif %}
+    {% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}
+    {% if perms.produto.add_categoria %}<a href="{% url 'produto:criar_categoria' %}">Nova categoria</a>{% endif %}
+</nav>
+{% endif %}
+<div class="product-grid">
+{% for produto in produtos %}
+    <article class="product-card">
+        <div class="product-mark" aria-hidden="true">✿</div>
+        <p class="eyebrow">{{ produto.categoria.get_nome_categoria_display }}</p>
+        <h2>{{ produto.nome_produto }}</h2>
+        <p>{{ produto.descricao_produto }}</p>
+        <p class="price">R$ {{ produto.precoUnitario|floatformat:2 }}</p>
+        <p>{% if produto.quantidadeEstoque > 0 %}<span class="badge">Em estoque</span>{% else %}<span class="badge unavailable">Produto esgotado</span>{% endif %}</p>
+        <div class="actions">
+            <a href="{% url 'produto:detalhe_produto' produto.pk %}">Ver detalhes</a>
+            {% if perms.produto.change_produto %}<a href="{% url 'produto:editar_produto' produto.pk %}">Editar</a>{% endif %}
+            {% if perms.produto.delete_produto %}<a href="{% url 'produto:excluir_produto' produto.pk %}">Excluir</a>{% endif %}
         </div>
-
-        <hr>
-
-    {% empty %}
-
-        <p>Nenhum produto cadastrado.</p>
-
-    {% endfor %}
-
-
-    <a href="{% url 'usuario:logout' %}">
-        Sair
-    </a>
-
-</body>
-
-</html>
+    </article>
+{% empty %}
+    <div class="empty"><h2>Nosso jardim está começando.</h2><p>Nenhum produto cadastrado por enquanto.</p>{% if perms.produto.add_produto %}<a class="button" href="{% url 'produto:criar_produto' %}">Cadastrar primeiro produto</a>{% endif %}</div>
+{% endfor %}
+</div>
+{% endblock %}

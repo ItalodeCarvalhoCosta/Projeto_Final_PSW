@@ -1,18 +1,13 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Produtos e categorias</title>
-</head>
-<body>
+{% extends "home/base.html" %}
+{% block content %}
+<a href="{% url 'produto:catalogo' %}">Catálogo</a>
 {% if pagina == "listar_categorias" %}
     <h1>Categorias</h1>
-    <a href="{% url 'produto:criar_categoria' %}">Criar categoria</a>
+    {% if perms.produto.add_categoria %}<a href="{% url 'produto:criar_categoria' %}">Criar categoria</a>{% endif %}
     {% if categorias %}
         <ul>
             {% for categoria in categorias %}
-                <li><a href="{% url 'produto:detalhe_categoria' categoria.id %}">{{ categoria.nome }}</a></li>
+                <li><a href="{% url 'produto:detalhe_categoria' categoria.id %}">{{ categoria.nome_categoria }}</a></li>
             {% endfor %}
         </ul>
     {% else %}
@@ -20,14 +15,14 @@
     {% endif %}
 
 {% elif pagina == "detalhe_categoria" %}
-    <h1>{{ categoria.nome }}</h1>
-    <p>{{ categoria.descricao }}</p>
-    <a href="{% url 'produto:editar_categoria' categoria.id %}">Editar</a>
-    <a href="{% url 'produto:excluir_categoria' categoria.id %}">Excluir</a>
+    <h1>{{ categoria.nome_categoria }}</h1>
+    <p>{{ categoria.descricao_categoria }}</p>
+    {% if perms.produto.change_categoria %}<a href="{% url 'produto:editar_categoria' categoria.id %}">Editar</a>{% endif %}
+    {% if perms.produto.delete_categoria %}<a href="{% url 'produto:excluir_categoria' categoria.id %}">Excluir</a>{% endif %}
     <h2>Produtos</h2>
     <ul>
         {% for produto in categoria.produtos.all %}
-            <li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome }}</a></li>
+            <li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a></li>
         {% empty %}
             <li>Nenhum produto nesta categoria.</li>
         {% endfor %}
@@ -42,7 +37,7 @@
     </form>
 
 {% elif pagina == "excluir_categoria" %}
-    <h1>Excluir {{ categoria.nome }}?</h1>
+    <h1>Excluir {{ categoria.nome_categoria }}?</h1>
     <form method="post">
         {% csrf_token %}
         <input type="submit" value="Confirmar exclusão">
@@ -50,12 +45,12 @@
 
 {% elif pagina == "listar_produtos" %}
     <h1>Produtos</h1>
-    <a href="{% url 'produto:criar_produto' %}">Criar produto</a>
-    <a href="{% url 'produto:listar_categorias' %}">Categorias</a>
+    {% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Criar produto</a>{% endif %}
+    {% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}
     {% if produtos %}
         <ul>
             {% for produto in produtos %}
-                <li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome }}</a></li>
+                <li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a></li>
             {% endfor %}
         </ul>
     {% else %}
@@ -63,14 +58,14 @@
     {% endif %}
 
 {% elif pagina == "detalhe_produto" %}
-    <h1>{{ produto.nome }}</h1>
-    <p>{{ produto.descricao }}</p>
+    <h1>{{ produto.nome_produto }}</h1>
+    <p>{{ produto.descricao_produto }}</p>
     <p>Categoria: {{ produto.categoria }}</p>
-    <p>Preço: {{ produto.preco }}</p>
-    <p>Estoque: {{ produto.estoque }}</p>
+    <p>Preço: {{ produto.precoUnitario }}</p>
+    <p>Estoque: {{ produto.quantidadeEstoque }}</p>
     <p>Peso: {{ produto.peso }}</p>
-    <a href="{% url 'produto:editar_produto' produto.id %}">Editar</a>
-    <a href="{% url 'produto:excluir_produto' produto.id %}">Excluir</a>
+    {% if perms.produto.change_produto %}<a href="{% url 'produto:editar_produto' produto.id %}">Editar</a>{% endif %}
+    {% if perms.produto.delete_produto %}<a href="{% url 'produto:excluir_produto' produto.id %}">Excluir</a>{% endif %}
 
 {% elif pagina == "formulario_produto" %}
     <h1>{% if produto %}Editar{% else %}Criar{% endif %} produto</h1>
@@ -81,11 +76,11 @@
     </form>
 
 {% elif pagina == "excluir_produto" %}
-    <h1>Excluir {{ produto.nome }}?</h1>
+    <h1>Excluir {{ produto.nome_produto }}?</h1>
     <form method="post">
         {% csrf_token %}
         <input type="submit" value="Confirmar exclusão">
     </form>
 {% endif %}
-</body>
-</html>
+
+{% endblock %}

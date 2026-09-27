@@ -1,7 +1,9 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
+from django.core.exceptions import PermissionDenied
+from django.views.decorators.http import require_POST
 from .forms import CriarUsuarioForm, UsuarioForm
 from .models import Usuario
 from django.shortcuts import redirect
@@ -10,7 +12,7 @@ from django.contrib.auth import authenticate, login, logout
 TEMPLATE_USUARIO = "usuario/usuario.html"
 
 @login_required
-@permission_required("usuario.view_usuario")
+@permission_required("usuario.view_usuario", raise_exception=True)
 def listar_usuarios(request):
     usuarios = Usuario.objects.all()
 
@@ -24,8 +26,9 @@ def listar_usuarios(request):
     )
 
 @login_required
-@permission_required("usuario.view_usuario")
 def detalhe_usuario(request, usuario_id):
+    if request.user.pk != usuario_id and not request.user.has_perm("usuario.view_usuario"):
+        raise PermissionDenied
     usuario = get_object_or_404(
         Usuario,
         pk=usuario_id
@@ -42,9 +45,15 @@ def detalhe_usuario(request, usuario_id):
 
 
 def criar_usuario(request):
+    if request.user.is_authenticated and not request.user.has_perm("usuario.add_usuario"):
+        raise PermissionDenied
     form = CriarUsuarioForm(request.POST or None)
     if form.is_valid():
         usuario = form.save()
+        if not request.user.is_authenticated:
+            return redirect("usuario:login")
+        if not request.user.has_perm("usuario.view_usuario"):
+            return redirect("produto:catalogo")
         return HttpResponseRedirect(
             reverse(
                 "usuario:detalhe_usuario",
@@ -59,8 +68,9 @@ def criar_usuario(request):
     )
 
 @login_required
-@permission_required("usuario.change_usuario")
 def editar_usuario(request, usuario_id):
+    if request.user.pk != usuario_id and not request.user.has_perm("usuario.change_usuario"):
+        raise PermissionDenied
     usuario = get_object_or_404(
         Usuario,
         pk=usuario_id
@@ -69,6 +79,8 @@ def editar_usuario(request, usuario_id):
     form = UsuarioForm(request.POST or None, instance=usuario)
     if form.is_valid():
         usuario = form.save()
+        if request.user.pk != usuario_id and not request.user.has_perm("usuario.view_usuario"):
+            return redirect("produto:catalogo")
         return HttpResponseRedirect(
             reverse(
                 "usuario:detalhe_usuario",
@@ -87,7 +99,7 @@ def editar_usuario(request, usuario_id):
     )
 
 @login_required
-@permission_required("usuario.delete_usuario")
+@permission_required("usuario.delete_usuario", raise_exception=True)
 def excluir_usuario(request, usuario_id):
     usuario = get_object_or_404(
         Usuario,
@@ -96,6 +108,11 @@ def excluir_usuario(request, usuario_id):
 
     if request.method == "POST":
         usuario.delete()
+        if request.user.pk == usuario_id:
+            logout(request)
+            return redirect("inicio")
+        if not request.user.has_perm("usuario.view_usuario"):
+            return redirect("produto:catalogo")
 
         return HttpResponseRedirect(
             reverse("usuario:listar_usuarios")
@@ -113,9 +130,11 @@ def excluir_usuario(request, usuario_id):
 
 #login#
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("produto:catalogo")
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
 
         usuario = authenticate(request, username=username, password=password)
 
@@ -128,6 +147,7 @@ def login_view(request):
 
     return render(request, 'usuario/login.html')
 
+@require_POST
 def logout_view(request):
     logout(request)
     return redirect("/")
