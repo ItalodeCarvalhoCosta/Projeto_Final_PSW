@@ -1,14 +1,9 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Usuários</title>
-</head>
-<body>
+{% extends "home/base.html" %}
+{% block content %}
+    <a href="{% url 'produto:catalogo' %}">Catálogo</a>
     {% if pagina == "listar" %}
         <h1>Usuários</h1>
-        <a href="{% url 'usuario:criar_usuario' %}">Criar usuário</a>
+        {% if perms.usuario.add_usuario %}<a href="{% url 'usuario:criar_usuario' %}">Criar usuário</a>{% endif %}
         {% if usuarios %}
             <ul>
                 {% for usuario in usuarios %}
@@ -26,8 +21,12 @@
         <p>E-mail: {{ usuario.email }}</p>
         <p>CPF: {{ usuario.cpf }}</p>
         <p>Telefone: {{ usuario.telefone }}</p>
+        {% if user.pk == usuario.pk or perms.usuario.change_usuario %}
         <a href="{% url 'usuario:editar_usuario' usuario.id %}">Editar</a>
+        {% endif %}
+        {% if perms.usuario.delete_usuario %}
         <a href="{% url 'usuario:excluir_usuario' usuario.id %}">Excluir</a>
+        {% endif %}
 
     {% elif pagina == "formulario" %}
         <h1>{% if usuario %}Editar{% else %}Criar{% endif %} usuário</h1>
@@ -44,5 +43,5 @@
             <input type="submit" value="Confirmar exclusão">
         </form>
     {% endif %}
-</body>
-</html>
+
+{% endblock %}

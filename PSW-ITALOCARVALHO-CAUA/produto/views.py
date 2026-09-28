@@ -11,7 +11,7 @@ TEMPLATE_PRODUTO = "produto/produto.html"
 
 
 @login_required
-@permission_required("produto.view_categoria")
+@permission_required("produto.view_categoria", raise_exception=True)
 def listar_categorias(request):
     categorias = Categoria.objects.all()
 
@@ -25,7 +25,7 @@ def listar_categorias(request):
     )
 
 @login_required
-@permission_required("produto.view_categoria")
+@permission_required("produto.view_categoria", raise_exception=True)
 def detalhe_categoria(request, categoria_id):
     categoria = get_object_or_404(
         Categoria,
@@ -42,7 +42,7 @@ def detalhe_categoria(request, categoria_id):
     )
 
 @login_required
-@permission_required("produto.add_categoria")
+@permission_required("produto.add_categoria", raise_exception=True)
 def criar_categoria(request):
     form = CategoriaForm(request.POST or None)
     if form.is_valid():
@@ -58,7 +58,7 @@ def criar_categoria(request):
     )
 
 @login_required
-@permission_required("produto.change_categoria")
+@permission_required("produto.change_categoria", raise_exception=True)
 def editar_categoria(request, categoria_id):
     categoria = get_object_or_404(
         Categoria,
@@ -86,7 +86,7 @@ def editar_categoria(request, categoria_id):
     )
 
 @login_required
-@permission_required("produto.delete_categoria")
+@permission_required("produto.delete_categoria", raise_exception=True)
 def excluir_categoria(request, categoria_id):
     categoria = get_object_or_404(
         Categoria,
@@ -139,7 +139,7 @@ def detalhe_produto(request, produto_id):
     )
 
 @login_required
-@permission_required("produto.add_produto")
+@permission_required("produto.add_produto", raise_exception=True)
 def criar_produto(request):
     form = ProdutoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
@@ -158,7 +158,7 @@ def criar_produto(request):
     )
 
 @login_required
-@permission_required("produto.change_categoria")
+@permission_required("produto.change_produto", raise_exception=True)
 def editar_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
@@ -186,7 +186,7 @@ def editar_produto(request, produto_id):
     )
 
 @login_required
-@permission_required("produto.delete_categoria")
+@permission_required("produto.delete_produto", raise_exception=True)
 def excluir_produto(request, produto_id):
     produto = get_object_or_404(
         Produto,
@@ -210,7 +210,6 @@ def excluir_produto(request, produto_id):
     )
 
 
-@login_required
 def catalogo(request):
     produtos = Produto.objects.all()
     return render(
@@ -218,6 +217,5 @@ def catalogo(request):
         "produto/catalogo.html",
         {
             "produtos": produtos
-            
         }
     )
