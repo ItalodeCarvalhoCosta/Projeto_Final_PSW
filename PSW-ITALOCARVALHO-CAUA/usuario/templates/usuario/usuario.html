@@ -1,47 +1,16 @@
 {% extends "home/base.html" %}
+{% block title %}Usuários | Floricultura Aurora{% endblock %}
 {% block content %}
-    <a href="{% url 'produto:catalogo' %}">Catálogo</a>
-    {% if pagina == "listar" %}
-        <h1>Usuários</h1>
-        {% if perms.usuario.add_usuario %}<a href="{% url 'usuario:criar_usuario' %}">Criar usuário</a>{% endif %}
-        {% if usuarios %}
-            <ul>
-                {% for usuario in usuarios %}
-                    <li><a href="{% url 'usuario:detalhe_usuario' usuario.id %}">{{ usuario.username }}</a></li>
-                {% endfor %}
-            </ul>
-        {% else %}
-            <p>Nenhum usuário cadastrado.</p>
-        {% endif %}
-
-    {% elif pagina == "detalhe" %}
-        <h1>{{ usuario.username }}</h1>
-        <p>Nome: {{ usuario.first_name }}</p>
-        <p>Sobrenome: {{ usuario.last_name }}</p>
-        <p>E-mail: {{ usuario.email }}</p>
-        <p>CPF: {{ usuario.cpf }}</p>
-        <p>Telefone: {{ usuario.telefone }}</p>
-        {% if user.pk == usuario.pk or perms.usuario.change_usuario %}
-        <a href="{% url 'usuario:editar_usuario' usuario.id %}">Editar</a>
-        {% endif %}
-        {% if perms.usuario.delete_usuario %}
-        <a href="{% url 'usuario:excluir_usuario' usuario.id %}">Excluir</a>
-        {% endif %}
-
-    {% elif pagina == "formulario" %}
-        <h1>{% if usuario %}Editar{% else %}Criar{% endif %} usuário</h1>
-        <form method="post">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <input type="submit" value="Salvar">
-        </form>
-
-    {% elif pagina == "excluir" %}
-        <h1>Excluir {{ usuario.username }}?</h1>
-        <form method="post">
-            {% csrf_token %}
-            <input type="submit" value="Confirmar exclusão">
-        </form>
-    {% endif %}
-
+<div class="page-heading"><p class="section-kicker">Sua conta</p><h1>{% if pagina == "listar" %}Usuários{% elif pagina == "detalhe" %}Perfil de {{ usuario.username }}{% elif pagina == "formulario" %}{% if usuario %}Editar usuário{% else %}Criar conta{% endif %}{% else %}Excluir usuário{% endif %}</h1></div>
+<nav class="toolbar" aria-label="Navegação"><a href="{% url 'produto:catalogo' %}">Catálogo</a>{% if pagina == "listar" and perms.usuario.add_usuario %}<a href="{% url 'usuario:criar_usuario' %}">Novo usuário</a>{% endif %}</nav>
+{% if pagina == "listar" %}
+    {% if usuarios %}<ul class="info-list">{% for usuario in usuarios %}<li><a href="{% url 'usuario:detalhe_usuario' usuario.id %}">{{ usuario.username }}</a></li>{% endfor %}</ul>{% else %}<div class="empty"><h2>Nenhum usuário cadastrado.</h2></div>{% endif %}
+{% elif pagina == "detalhe" %}
+    <section class="panel detail-grid"><div><span class="field-label">Nome</span><strong>{{ usuario.first_name|default:"Não informado" }} {{ usuario.last_name }}</strong></div><div><span class="field-label">E-mail</span><strong>{{ usuario.email|default:"Não informado" }}</strong></div><div><span class="field-label">CPF</span><strong>{{ usuario.cpf|default:"Não informado" }}</strong></div><div><span class="field-label">Telefone</span><strong>{{ usuario.telefone|default:"Não informado" }}</strong></div></section>
+    <div class="actions">{% if user.pk == usuario.pk or perms.usuario.change_usuario %}<a class="button" href="{% url 'usuario:editar_usuario' usuario.id %}">Editar perfil</a>{% endif %}{% if perms.usuario.delete_usuario %}<a href="{% url 'usuario:excluir_usuario' usuario.id %}">Excluir usuário</a>{% endif %}</div>
+{% elif pagina == "formulario" %}
+    <form class="panel" method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Salvar usuário</button></form>
+{% elif pagina == "excluir" %}
+    <section class="panel danger-panel"><h2>Excluir {{ usuario.username }}?</h2><p>Essa ação não pode ser desfeita.</p><form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form></section>
+{% endif %}
 {% endblock %}

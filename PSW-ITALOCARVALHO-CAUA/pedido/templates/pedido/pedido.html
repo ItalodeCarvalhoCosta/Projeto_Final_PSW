@@ -1,39 +1,18 @@
 {% extends "home/base.html" %}
+{% block title %}Pedidos | Floricultura Aurora{% endblock %}
 {% block content %}
-    <a href="{% url 'produto:catalogo' %}">Catálogo</a>
-    <a href="{% url 'pedido:listar_pedidos' %}">Pedidos</a>
-    {% if pagina == "listar" %}
-        <h1>{% if perms.pedido.view_pedido %}Todos os pedidos{% else %}Meus pedidos{% endif %}</h1>
-        {% if perms.pedido.add_pedido %}<a href="{% url 'pedido:criar_pedido' %}">Criar pedido</a>{% endif %}
-        {% for pedido in pedidos %}
-            <article>
-                <h2>Pedido #{{ pedido.numero_pedido }}</h2>
-                <p>Data: {{ pedido.dataHora }}</p>
-                <p>Endereço: {{ pedido.rua }}, {{ pedido.num_casa }} - {{ pedido.bairro }}</p>
-                <p>CEP: {{ pedido.cep }}</p>
-                <p>Total: R$ {{ pedido.valorTotal }}</p>
-                <a href="{% url 'pedido:detalhe_pedido' pedido.pk %}">Ver pedido</a>
-            </article>
-        {% empty %}<p>Nenhum pedido encontrado.</p>{% endfor %}
-    {% elif pagina == "detalhe" %}
-        <h1>Pedido #{{ pedido.pk }}</h1>
-        <p>Cliente: {{ pedido.usuario }}</p>
-        <p>Data: {{ pedido.dataHora }}</p>
-        <p>Endereço: {{ pedido.rua }}, {{ pedido.num_casa }} - {{ pedido.bairro }}</p>
-        <p>CEP: {{ pedido.cep }}</p>
-        <p>{{ pedido.descricao_pedido }}</p>
-        <p>Total: R$ {{ pedido.valorTotal }}</p>
-        <ul>{% for item in pedido.itens.all %}
-            <li>{{ item.quantidade }} × {{ item.produto.nome_produto }} — R$ {{ item.subtotal }}</li>
-        {% empty %}<li>Nenhum item cadastrado.</li>{% endfor %}</ul>
-        {% if perms.pedido.change_pedido %}<a href="{% url 'pedido:editar_pedido' pedido.pk %}">Editar</a>{% endif %}
-        {% if perms.pedido.delete_pedido %}<a href="{% url 'pedido:excluir_pedido' pedido.pk %}">Excluir</a>{% endif %}
-    {% elif pagina == "formulario" %}
-        <h1>{% if pedido %}Editar pedido{% else %}Criar{% endif %} pedido</h1>
-        <form method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Salvar</button></form>
-    {% elif pagina == "excluir" %}
-        <h1>Excluir pedido #{{ pedido.pk }}?</h1>
-        <form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form>
-    {% endif %}
-
+<div class="page-heading"><p class="section-kicker">Acompanhe suas compras</p><h1>{% if pagina == "listar" %}{% if perms.pedido.view_pedido %}Todos os pedidos{% else %}Meus pedidos{% endif %}{% elif pagina == "detalhe" %}Pedido #{{ pedido.numero_pedido }}{% elif pagina == "formulario" %}{% if pedido %}Editar pedido{% else %}Finalizar pedido{% endif %}{% else %}Excluir pedido{% endif %}</h1></div>
+<nav class="toolbar" aria-label="Navegação de pedidos"><a href="{% url 'produto:catalogo' %}">Catálogo</a><a href="{% url 'pedido:carrinho' %}">Carrinho</a><a href="{% url 'pedido:listar_pedidos' %}">Meus pedidos</a></nav>
+{% if pagina == "listar" %}
+    <section class="order-list">{% for pedido in pedidos %}<article class="panel order-card"><div><p class="section-kicker">Pedido #{{ pedido.numero_pedido }}</p><h2>{{ pedido.dataHora }}</h2><p>{{ pedido.rua }}, {{ pedido.num_casa }} — {{ pedido.bairro }}</p></div><div><strong>R$ {{ pedido.valorTotal|floatformat:2 }}</strong><a href="{% url 'pedido:detalhe_pedido' pedido.pk %}">Ver pedido →</a></div></article>{% empty %}<div class="empty"><h2>Nenhum pedido encontrado.</h2><p>Seus pedidos aparecerão aqui.</p></div>{% endfor %}</section>
+{% elif pagina == "detalhe" %}
+    <section class="panel detail-grid"><div><span class="field-label">Cliente</span><strong>{{ pedido.usuario }}</strong></div><div><span class="field-label">Data</span><strong>{{ pedido.dataHora }}</strong></div><div><span class="field-label">Endereço</span><strong>{{ pedido.rua }}, {{ pedido.num_casa }} — {{ pedido.bairro }}, {{ pedido.cep }}</strong></div><div><span class="field-label">Total</span><strong>R$ {{ pedido.valorTotal|floatformat:2 }}</strong></div></section>
+    {% if pedido.descricao_pedido %}<section class="panel"><h2>Descrição</h2><p>{{ pedido.descricao_pedido }}</p></section>{% endif %}
+    <h2>Itens do pedido</h2><ul class="info-list">{% for item in pedido.itens.all %}<li>{{ item.quantidade }} × {{ item.produto.nome_produto }} — R$ {{ item.subtotal|floatformat:2 }}</li>{% empty %}<li>Nenhum item cadastrado.</li>{% endfor %}</ul>
+    <div class="actions">{% if perms.pedido.change_pedido %}<a href="{% url 'pedido:editar_pedido' pedido.pk %}">Editar</a>{% endif %}{% if perms.pedido.delete_pedido %}<a href="{% url 'pedido:excluir_pedido' pedido.pk %}">Excluir</a>{% endif %}</div>
+{% elif pagina == "formulario" %}
+    <form class="panel" method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Salvar pedido</button></form>
+{% elif pagina == "excluir" %}
+    <section class="panel danger-panel"><h2>Excluir pedido #{{ pedido.numero_pedido }}?</h2><p>Essa ação não pode ser desfeita.</p><form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form></section>
+{% endif %}
 {% endblock %}

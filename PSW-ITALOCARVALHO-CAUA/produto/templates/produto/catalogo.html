@@ -1,40 +1,27 @@
 {% extends "home/base.html" %}
-{% block title %}Catálogo | Floricultura{% endblock %}
+{% block title %}Catálogo | Floricultura Aurora{% endblock %}
 {% block content %}
-<p class="eyebrow">Um carinho que floresce</p>
-<h1>Nosso catálogo</h1>
-<p>Escolha um pouco de natureza para fazer parte do seu dia.</p>
+<div class="page-hero"><p class="section-kicker light">Flores, plantas e muito mais</p><h1>Nosso catálogo</h1><p>Escolha um pouco de natureza para fazer parte do seu dia.</p></div>
 {% if perms.produto.add_produto or perms.produto.view_categoria or perms.produto.add_categoria %}
-<nav class="toolbar" aria-label="Gerenciamento do catálogo">
-    <strong>Gerenciar catálogo</strong>
+<nav class="toolbar" aria-label="Gerenciamento do catálogo"><strong>Gerenciar catálogo</strong>
     {% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Novo produto</a>{% endif %}
     {% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}
     {% if perms.produto.add_categoria %}<a href="{% url 'produto:criar_categoria' %}">Nova categoria</a>{% endif %}
-    
 </nav>
 {% endif %}
+<div class="section-heading catalog-heading"><div><p class="section-kicker">Seleção Floricultura Aurora</p><h2>Descubra nossos produtos</h2></div></div>
 <div class="product-grid">
 {% for produto in produtos %}
     <article class="product-card">
-        <div class="product-mark" aria-hidden="true">✿</div>
-        <p class="eyebrow">{{ produto.categoria.get_nome_categoria_display }}</p>
-        <h2>{{ produto.nome_produto }}</h2>
-        <p>{{ produto.descricao_produto }}</p>
-        <p class="price">R$ {{ produto.precoUnitario|floatformat:2 }}</p>
-        <p>{% if produto.quantidadeEstoque > 0 %}<span class="badge">Em estoque</span>{% else %}<span class="badge unavailable">Produto esgotado</span>{% endif %}</p>
-        <div class="actions">
-            <a href="{% url 'produto:detalhe_produto' produto.pk %}">Ver detalhes</a>
-            {% if perms.produto.change_produto %}<a href="{% url 'produto:editar_produto' produto.pk %}">Editar</a>{% endif %}
-            {% if perms.produto.delete_produto %}<a href="{% url 'produto:excluir_produto' produto.pk %}">Excluir</a>{% endif %}
-            {% if produto.quantidadeEstoque > 0 %}
-             <a href="{% url 'pedido:adicionar_carrinho' produto.pk %}">
-            Adicionar ao pedido
-            </a>
-            {% else %}
-            <span class="badge unavailable">
-            Indisponível
-            </span>
-            {% endif %}
+        <div class="product-visual" aria-hidden="true">✿</div>
+        <div class="product-card-body">
+            <p class="product-category">{{ produto.categoria.get_nome_categoria_display }}</p>
+            <h3>{{ produto.nome_produto }}</h3>
+            <p class="product-description">{{ produto.descricao_produto|truncatewords:18 }}</p>
+            <p>{% if produto.quantidadeEstoque > 0 %}<span class="stock-badge">Em estoque</span>{% else %}<span class="stock-badge unavailable">Produto esgotado</span>{% endif %}</p>
+            <div class="product-card-bottom"><strong>R$ {{ produto.precoUnitario|floatformat:2 }}</strong><a href="{% url 'produto:detalhe_produto' produto.pk %}">Ver detalhes →</a></div>
+            {% if produto.quantidadeEstoque > 0 %}<a class="card-cart-link" href="{% url 'pedido:adicionar_carrinho' produto.pk %}">Adicionar ao carrinho</a>{% endif %}
+            {% if perms.produto.change_produto or perms.produto.delete_produto %}<div class="card-admin-actions">{% if perms.produto.change_produto %}<a href="{% url 'produto:editar_produto' produto.pk %}">Editar</a>{% endif %}{% if perms.produto.delete_produto %}<a href="{% url 'produto:excluir_produto' produto.pk %}">Excluir</a>{% endif %}</div>{% endif %}
         </div>
     </article>
 {% empty %}

@@ -1,86 +1,40 @@
 {% extends "home/base.html" %}
+{% block title %}Produtos | Floricultura Aurora{% endblock %}
 {% block content %}
-<a href="{% url 'produto:catalogo' %}">Catálogo</a>
+<div class="page-heading">
+    <p class="section-kicker">{% if pagina == "detalhe_produto" %}Nosso catálogo{% else %}Produtos e categorias{% endif %}</p>
+    <h1>{% if pagina == "listar_categorias" %}Categorias{% elif pagina == "detalhe_categoria" %}{{ categoria.get_nome_categoria_display }}{% elif pagina == "listar_produtos" %}Produtos{% elif pagina == "detalhe_produto" %}{{ produto.nome_produto }}{% elif pagina == "formulario_categoria" %}{% if categoria %}Editar categoria{% else %}Criar categoria{% endif %}{% elif pagina == "formulario_produto" %}{% if produto %}Editar produto{% else %}Criar produto{% endif %}{% else %}Confirmar exclusão{% endif %}</h1>
+</div>
+<nav class="toolbar" aria-label="Navegação de produtos"><a href="{% url 'produto:catalogo' %}">Catálogo</a>{% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Novo produto</a>{% endif %}{% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}</nav>
 {% if pagina == "listar_categorias" %}
-    <h1>Categorias</h1>
-    {% if perms.produto.add_categoria %}<a href="{% url 'produto:criar_categoria' %}">Criar categoria</a>{% endif %}
-    {% if categorias %}
-        <ul>
-            {% for categoria in categorias %}
-                <li><a href="{% url 'produto:detalhe_categoria' categoria.id %}">{{ categoria.nome_categoria }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhuma categoria cadastrada.</p>
-    {% endif %}
-
+    {% if perms.produto.add_categoria %}<p><a class="button" href="{% url 'produto:criar_categoria' %}">Nova categoria</a></p>{% endif %}
+    {% if categorias %}<ul class="info-list">{% for categoria in categorias %}<li><a href="{% url 'produto:detalhe_categoria' categoria.id %}">{{ categoria.get_nome_categoria_display }}</a></li>{% endfor %}</ul>{% else %}<div class="empty"><h2>Nenhuma categoria cadastrada.</h2></div>{% endif %}
 {% elif pagina == "detalhe_categoria" %}
-    <h1>{{ categoria.nome_categoria }}</h1>
-    <p>{{ categoria.descricao_categoria }}</p>
-    {% if perms.produto.change_categoria %}<a href="{% url 'produto:editar_categoria' categoria.id %}">Editar</a>{% endif %}
-    {% if perms.produto.delete_categoria %}<a href="{% url 'produto:excluir_categoria' categoria.id %}">Excluir</a>{% endif %}
-    <h2>Produtos</h2>
-    <ul>
-        {% for produto in categoria.produtos.all %}
-            <li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a></li>
-        {% empty %}
-            <li>Nenhum produto nesta categoria.</li>
-        {% endfor %}
-    </ul>
-
+    <section class="panel"><p>{{ categoria.descricao_categoria }}</p><div class="actions">{% if perms.produto.change_categoria %}<a href="{% url 'produto:editar_categoria' categoria.id %}">Editar</a>{% endif %}{% if perms.produto.delete_categoria %}<a href="{% url 'produto:excluir_categoria' categoria.id %}">Excluir</a>{% endif %}</div></section>
+    <h2>Produtos</h2><ul class="info-list">{% for produto in categoria.produtos.all %}<li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a></li>{% empty %}<li>Nenhum produto nesta categoria.</li>{% endfor %}</ul>
 {% elif pagina == "formulario_categoria" %}
-    <h1>{% if categoria %}Editar{% else %}Criar{% endif %} categoria</h1>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Salvar">
-    </form>
-
+    <form class="panel" method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Salvar categoria</button></form>
 {% elif pagina == "excluir_categoria" %}
-    <h1>Excluir {{ categoria.nome_categoria }}?</h1>
-    <form method="post">
-        {% csrf_token %}
-        <input type="submit" value="Confirmar exclusão">
-    </form>
-
+    <section class="panel danger-panel"><h2>Excluir {{ categoria.get_nome_categoria_display }}?</h2><p>Essa ação não pode ser desfeita.</p><form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form></section>
 {% elif pagina == "listar_produtos" %}
-    <h1>Produtos</h1>
-    {% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Criar produto</a>{% endif %}
-    {% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}
-    {% if produtos %}
-        <ul>
-            {% for produto in produtos %}
-                <li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a></li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p>Nenhum produto cadastrado.</p>
-    {% endif %}
-
+    {% if produtos %}<ul class="info-list">{% for produto in produtos %}<li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a> — R$ {{ produto.precoUnitario|floatformat:2 }}</li>{% endfor %}</ul>{% else %}<div class="empty"><h2>Nenhum produto cadastrado.</h2></div>{% endif %}
 {% elif pagina == "detalhe_produto" %}
-    <h1>{{ produto.nome_produto }}</h1>
-    <p>{{ produto.descricao_produto }}</p>
-    <p>Categoria: {{ produto.categoria }}</p>
-    <p>Preço: {{ produto.precoUnitario }}</p>
-    <p>Estoque: {{ produto.quantidadeEstoque }}</p>
-    <p>Peso: {{ produto.peso }}</p>
-    {% if perms.produto.change_produto %}<a href="{% url 'produto:editar_produto' produto.id %}">Editar</a>{% endif %}
-    {% if perms.produto.delete_produto %}<a href="{% url 'produto:excluir_produto' produto.id %}">Excluir</a>{% endif %}
-
+    <section class="product-detail">
+        <div class="product-detail-visual" aria-hidden="true">✿</div>
+        <div class="product-detail-copy">
+            <p class="section-kicker">{{ produto.categoria.get_nome_categoria_display }}</p>
+            <p class="product-detail-price">R$ {{ produto.precoUnitario|floatformat:2 }}</p>
+            <p>{{ produto.descricao_produto }}</p>
+            <div class="product-detail-facts">
+                <div><span class="field-label">Disponibilidade</span>{% if produto.quantidadeEstoque > 0 %}<span class="stock-badge">Em estoque</span>{% else %}<span class="stock-badge unavailable">Produto esgotado</span>{% endif %}</div>
+                <div><span class="field-label">Peso</span><strong>{{ produto.peso }}</strong></div>
+            </div>
+            <div class="actions">{% if produto.quantidadeEstoque > 0 %}<a class="button" href="{% url 'pedido:adicionar_carrinho' produto.pk %}">Adicionar ao carrinho</a>{% endif %}<a href="{% url 'produto:catalogo' %}">Voltar ao catálogo</a>{% if perms.produto.change_produto %}<a href="{% url 'produto:editar_produto' produto.id %}">Editar</a>{% endif %}{% if perms.produto.delete_produto %}<a href="{% url 'produto:excluir_produto' produto.id %}">Excluir</a>{% endif %}</div>
+        </div>
+    </section>
 {% elif pagina == "formulario_produto" %}
-    <h1>{% if produto %}Editar{% else %}Criar{% endif %} produto</h1>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <input type="submit" value="Salvar">
-    </form>
-
+    <form class="panel" method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button type="submit">Salvar produto</button></form>
 {% elif pagina == "excluir_produto" %}
-    <h1>Excluir {{ produto.nome_produto }}?</h1>
-    <form method="post">
-        {% csrf_token %}
-        <input type="submit" value="Confirmar exclusão">
-    </form>
+    <section class="panel danger-panel"><h2>Excluir {{ produto.nome_produto }}?</h2><p>Essa ação não pode ser desfeita.</p><form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form></section>
 {% endif %}
-
 {% endblock %}

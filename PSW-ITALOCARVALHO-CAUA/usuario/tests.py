@@ -20,15 +20,16 @@ class AccessTests(TestCase):
         cls.admin = User.objects.create_superuser(
             username="admin", password="SenhaTeste!482", email="admin@example.com"
         )
-        cls.category = Categoria.objects.create(nome_categoria="flores", descricao_categoria="Flores")
+        cls.category = Categoria.objects.create(nome_categoria="Flor", descricao_categoria="Flores")
         cls.product = Produto.objects.create(
             categoria=cls.category, nome_produto="Rosa", descricao_produto="Rosa vermelha",
             precoUnitario="15.00", quantidadeEstoque=10, peso="0.10"
         )
         cls.orders = [Pedido.objects.create(
+            numero_pedido=numero,
             usuario=user, bairro="Centro", rua="Rua A", num_casa="1", cep="00000000",
             dataHora=timezone.now(), descricao_pedido="Flores", valorTotal="15.00"
-        ) for user in (cls.customer, cls.other)]
+        ) for numero, user in enumerate((cls.customer, cls.other), start=1)]
 
     def test_public_catalog_and_hidden_management_links(self):
         for name, args in (("produto:catalogo", []), ("produto:listar_produtos", []),
@@ -51,7 +52,7 @@ class AccessTests(TestCase):
         routes = [("produto:criar_produto", []), ("produto:editar_produto", [self.product.pk]),
                   ("produto:excluir_produto", [self.product.pk]), ("produto:criar_categoria", []),
                   ("usuario:listar_usuarios", []), ("usuario:editar_usuario", [self.other.pk]),
-                  ("usuario:excluir_usuario", [self.other.pk]), ("pedido:criar_pedido", [])]
+                  ("usuario:excluir_usuario", [self.other.pk])]
         for order in self.orders:
             routes.extend([("pedido:editar_pedido", [order.pk]), ("pedido:excluir_pedido", [order.pk])])
         for name, args in routes:
@@ -85,15 +86,22 @@ class AccessTests(TestCase):
         self.client.force_login(self.admin)
         response = self.client.get(reverse("pedido:listar_pedidos"))
         self.assertEqual(response.context["pedidos"].count(), 2)
-        for name, args in (("pedido:criar_pedido", []), ("pedido:editar_pedido", [self.orders[0].pk]),
+        for name, args in (("pedido:editar_pedido", [self.orders[0].pk]),
                            ("produto:editar_produto", [self.product.pk]), ("usuario:listar_usuarios", [])):
             self.assertEqual(self.client.get(reverse(name, args=args)).status_code, 200)
-        self.assertContains(self.client.get(reverse("pedido:criar_pedido")), 'name="usuario"')
         url = reverse("pedido:excluir_pedido", args=[self.orders[0].pk])
         self.assertEqual(self.client.get(url).status_code, 200)
         self.assertTrue(Pedido.objects.filter(pk=self.orders[0].pk).exists())
         self.assertEqual(self.client.post(url).status_code, 302)
         self.assertFalse(Pedido.objects.filter(pk=self.orders[0].pk).exists())
+
+    def test_customer_can_open_checkout_with_items_in_cart(self):
+        self.client.force_login(self.customer)
+        session = self.client.session
+        session["carrinho"] = {str(self.product.pk): 1}
+        session.save()
+        self.assertContains(self.client.get(reverse("pedido:carrinho")), "Rosa")
+        self.assertContains(self.client.get(reverse("pedido:criar_pedido")), 'name="bairro"')
 
     def test_category_permissions_do_not_allow_product_management(self):
         self.customer.user_permissions.add(*Permission.objects.filter(

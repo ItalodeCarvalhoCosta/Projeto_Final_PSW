@@ -1,13 +1,37 @@
 {% extends "home/base.html" %}
-{% block title %}Bem-vindo | Floricultura{% endblock %}
+{% load static %}
+{% block title %}Floricultura Aurora | Flores e plantas{% endblock %}
+{% block main_class %}home-page{% endblock %}
 {% block content %}
-<section class="hero">
-    <p class="eyebrow">Flores, plantas e pequenos cuidados</p>
-    <h1>Mais verde.<br>Mais vida no seu dia.</h1>
-    <p>Encontre flores para presentear e plantas para deixar seu cantinho ainda mais especial.</p>
-    <div class="actions">
-        <a class="button" href="{% url 'produto:catalogo' %}">Explorar catálogo</a>
-        {% if not user.is_authenticated %}<a href="{% url 'usuario:login' %}">Já tenho uma conta</a>{% else %}<a href="{% url 'pedido:listar_pedidos' %}">Acompanhar pedidos</a>{% endif %}
+<section class="home-hero" aria-labelledby="hero-title">
+    <div class="container hero-content">
+        <p class="section-kicker light">Um pouco de natureza para você</p>
+        <h1 id="hero-title">Flores e plantas para uma vida mais leve</h1>
+        <p>Descubra presentes cheios de vida e encontre o verde perfeito para transformar qualquer espaço.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="{% url 'produto:catalogo' %}">Explorar catálogo</a>
+            {% if user.is_authenticated %}<a class="btn btn-outline-light btn-lg" href="{% url 'pedido:listar_pedidos' %}">Meus pedidos</a>{% else %}<a class="btn btn-outline-light btn-lg" href="{% url 'usuario:criar_usuario' %}">Criar conta</a>{% endif %}
+        </div>
     </div>
 </section>
+<section class="home-highlights container" aria-label="Destaques">
+    <div class="highlight-card highlight-green"><span class="highlight-number">01</span><h2>Flores para presentear</h2><p>Um gesto especial para cada ocasião.</p><a href="{% url 'produto:catalogo' %}">Ver catálogo →</a></div>
+    <div class="highlight-card highlight-orange"><span class="highlight-number">02</span><h2>Mais verde em casa</h2><p>Plantas e mudas para cultivar bons momentos.</p><a href="{% url 'produto:catalogo' %}">Escolher plantas →</a></div>
+</section>
+<section class="about-section container">
+    <div class="about-art"><img src="{% static 'home/farmfresh/img/about.png' %}" alt="" loading="lazy"></div>
+    <div class="about-copy"><p class="section-kicker">Sobre a Floricultura Aurora</p><h2>Natureza que transforma pequenos momentos</h2><p>Acreditamos que flores e plantas fazem parte das melhores lembranças. Explore nosso catálogo e encontre uma escolha para presentear, decorar ou cultivar.</p><div class="about-points"><div><span aria-hidden="true">✿</span><strong>Escolhas com carinho</strong><p>Encontre o presente certo para cada momento.</p></div><div><span aria-hidden="true">❀</span><strong>Mais vida no seu dia</strong><p>Leve cor e frescor para seus espaços.</p></div></div></div>
+</section>
+<section class="featured-section">
+    <div class="container">
+        <div class="section-heading"><div><p class="section-kicker">Nosso catálogo</p><h2>Encontre seu próximo favorito</h2></div><a href="{% url 'produto:catalogo' %}">Ver todos os produtos →</a></div>
+        {% if produtos %}<div class="product-grid">{% for produto in produtos %}
+            <article class="product-card">
+                <div class="product-visual" aria-hidden="true">✿</div>
+                <div class="product-card-body"><p class="product-category">{{ produto.categoria.get_nome_categoria_display }}</p><h3>{{ produto.nome_produto }}</h3><p class="product-description">{{ produto.descricao_produto|truncatewords:15 }}</p><div class="product-card-bottom"><strong>R$ {{ produto.precoUnitario|floatformat:2 }}</strong><a href="{% url 'produto:detalhe_produto' produto.pk %}">Ver detalhes →</a></div>{% if produto.quantidadeEstoque > 0 %}<a class="card-cart-link" href="{% url 'pedido:adicionar_carrinho' produto.pk %}">Adicionar ao carrinho</a>{% else %}<span class="stock-badge unavailable">Produto esgotado</span>{% endif %}</div>
+            </article>
+        {% endfor %}</div>{% else %}<div class="empty"><h3>Novidades em breve</h3><p>Nosso catálogo está sendo preparado.</p><a class="button" href="{% url 'produto:catalogo' %}">Visitar catálogo</a></div>{% endif %}
+    </div>
+</section>
+<section class="closing-banner"><div class="container"><div><p class="section-kicker light">Floresça com a gente</p><h2>Seu próximo momento especial começa aqui.</h2></div><a class="btn btn-secondary btn-lg" href="{% url 'produto:catalogo' %}">Explorar catálogo</a></div></section>
 {% endblock %}
