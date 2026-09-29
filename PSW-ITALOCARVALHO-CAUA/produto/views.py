@@ -212,10 +212,17 @@ def excluir_produto(request, produto_id):
 
 def catalogo(request):
     produtos = Produto.objects.all()
+
+    carrinho = request.session.get("carrinho", {})
+
+    quantidade_carrinho = sum(carrinho.values())
+
     return render(
         request,
         "produto/catalogo.html",
         {
-            "produtos": produtos
+            "produtos": produtos,
+            "quantidade_carrinho": quantidade_carrinho,
         }
     )
+

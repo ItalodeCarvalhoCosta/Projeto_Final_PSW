@@ -10,6 +10,7 @@
     {% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Novo produto</a>{% endif %}
     {% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}
     {% if perms.produto.add_categoria %}<a href="{% url 'produto:criar_categoria' %}">Nova categoria</a>{% endif %}
+    <a href="{% url 'pedido:carrinho' %}"> Carrinho ({{ quantidade_carrinho }})</a>
 </nav>
 {% endif %}
 <div class="product-grid">
@@ -25,6 +26,15 @@
             <a href="{% url 'produto:detalhe_produto' produto.pk %}">Ver detalhes</a>
             {% if perms.produto.change_produto %}<a href="{% url 'produto:editar_produto' produto.pk %}">Editar</a>{% endif %}
             {% if perms.produto.delete_produto %}<a href="{% url 'produto:excluir_produto' produto.pk %}">Excluir</a>{% endif %}
+            {% if produto.quantidadeEstoque > 0 %}
+             <a href="{% url 'pedido:adicionar_carrinho' produto.pk %}">
+            Adicionar ao pedido
+            </a>
+            {% else %}
+            <span class="badge unavailable">
+            Indisponível
+            </span>
+            {% endif %}
         </div>
     </article>
 {% empty %}

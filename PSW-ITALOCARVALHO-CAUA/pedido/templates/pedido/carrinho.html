@@ -1,0 +1,73 @@
+{% extends "home/base.html" %}
+
+{% block content %}
+
+<a href="{% url 'produto:catalogo' %}">
+    ← Voltar para o catálogo
+</a>
+
+<h1>Meu Carrinho</h1>
+
+
+{% for item in itens %}
+
+<div>
+
+    <h3>
+        {{ item.produto.nome_produto }}
+    </h3>
+
+
+    <p>
+        Quantidade:
+
+        <a href="{% url 'pedido:diminuir_quantidade' item.produto.id %}">
+            -
+        </a>
+
+
+        {{ item.quantidade }}
+
+
+        <a href="{% url 'pedido:aumentar_quantidade' item.produto.id %}">
+            +
+        </a>
+
+    </p>
+
+
+    <p>
+        Subtotal:
+        R$ {{ item.subtotal }}
+    </p>
+
+
+</div>
+
+<hr>
+
+
+{% empty %}
+
+<p>
+    Carrinho vazio.
+</p>
+
+
+
+
+{% endfor %}
+
+
+<h2>
+    Total:
+    R$ {{ total }}
+</h2>
+
+
+<a href="{% url 'pedido:criar_pedido' %}">
+    Finalizar pedido
+</a>
+
+
+{% endblock %}

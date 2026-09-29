@@ -6,11 +6,11 @@ from django.core.exceptions import ValidationError
 
 class Categoria(models.Model):
     NOME_CHOICES = [
-        ('flores', 'Flores'),
-        ('arranjos', 'Arranjos'),
-        ('mudas', 'Mudas'),
-        ('ferramentas', 'Ferramentas'),
-        ('outros', 'Outros'),
+        ('Flor', 'Flores'),
+        ('Arranjo', 'Arranjos'),
+        ('Muda', 'Mudas'),
+        ('Ferramenta', 'Ferramentas'),
+        ('Outro', 'Outros'),
     ]
     nome_categoria = models.CharField(max_length=100, choices=NOME_CHOICES, unique=True)
     descricao_categoria = models.TextField()

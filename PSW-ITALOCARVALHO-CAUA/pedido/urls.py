@@ -31,4 +31,28 @@ urlpatterns = [
         views.excluir_pedido,
         name="excluir_pedido"
     ),
+    path(
+    "carrinho/",
+    views.carrinho,
+    name="carrinho"
+),
+
+
+    path(
+    "carrinho/adicionar/<int:produto_id>/",
+    views.adicionar_carrinho,
+    name="adicionar_carrinho"
+),
+    path(
+    "carrinho/aumentar/<int:produto_id>/",
+    views.aumentar_quantidade,
+    name="aumentar_quantidade"
+),
+
+
+    path(
+    "carrinho/diminuir/<int:produto_id>/",
+    views.diminuir_quantidade,
+    name="diminuir_quantidade"
+),
 ]

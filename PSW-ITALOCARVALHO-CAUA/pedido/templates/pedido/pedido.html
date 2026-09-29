@@ -7,7 +7,7 @@
         {% if perms.pedido.add_pedido %}<a href="{% url 'pedido:criar_pedido' %}">Criar pedido</a>{% endif %}
         {% for pedido in pedidos %}
             <article>
-                <h2>Pedido #{{ pedido.pk }}</h2>
+                <h2>Pedido #{{ pedido.numero_pedido }}</h2>
                 <p>Data: {{ pedido.dataHora }}</p>
                 <p>Endereço: {{ pedido.rua }}, {{ pedido.num_casa }} - {{ pedido.bairro }}</p>
                 <p>CEP: {{ pedido.cep }}</p>

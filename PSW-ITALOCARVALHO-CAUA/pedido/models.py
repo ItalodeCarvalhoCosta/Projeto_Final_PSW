@@ -9,6 +9,8 @@ class Pedido(models.Model):
         on_delete=models.CASCADE
     )
 
+    numero_pedido = models.PositiveIntegerField()
+
     bairro = models.CharField(max_length=100)
 
     rua = models.CharField(max_length=100)
@@ -17,13 +19,16 @@ class Pedido(models.Model):
 
     cep = models.CharField(max_length=10)
 
-    dataHora = models.DateTimeField()
+    dataHora = models.DateTimeField(
+    auto_now_add=True
+    )
 
     descricao_pedido = models.TextField()
 
     valorTotal = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
+        default=0
     )
 
     produtos = models.ManyToManyField(
