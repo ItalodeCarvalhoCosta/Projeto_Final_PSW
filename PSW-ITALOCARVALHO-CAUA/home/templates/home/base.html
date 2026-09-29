@@ -17,6 +17,7 @@
                 <a href="{% url 'pedido:listar_pedidos' %}">{% if perms.pedido.view_pedido %}Pedidos{% else %}Meus pedidos{% endif %}</a>
                 {% if user.usuario %}<a href="{% url 'usuario:detalhe_usuario' user.pk %}">Meu perfil</a>{% endif %}
                 {% if perms.usuario.view_usuario %}<a href="{% url 'usuario:listar_usuarios' %}">Usuários</a>{% endif %}
+                <a href="{% url 'pedido:carrinho' %}"> Carrinho ({{ quantidade_carrinho }})</a>
                 <span class="session">Olá, {{ user.first_name|default:user.username }}</span>
                 <form class="logout" method="post" action="{% url 'usuario:logout' %}">{% csrf_token %}<button class="secondary" type="submit">Sair</button></form>
             {% else %}

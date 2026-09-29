@@ -10,7 +10,7 @@
     {% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Novo produto</a>{% endif %}
     {% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}
     {% if perms.produto.add_categoria %}<a href="{% url 'produto:criar_categoria' %}">Nova categoria</a>{% endif %}
-    <a href="{% url 'pedido:carrinho' %}"> Carrinho ({{ quantidade_carrinho }})</a>
+    
 </nav>
 {% endif %}
 <div class="product-grid">
