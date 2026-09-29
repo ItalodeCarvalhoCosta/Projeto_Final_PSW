@@ -40,14 +40,21 @@ def detalhe_pedido(request, pedido_id):
     )
 
 @login_required
+@login_required
 def criar_pedido(request):
 
     carrinho = request.session.get("carrinho", {})
+
 
     if not carrinho:
         return HttpResponseRedirect(
             reverse("produto:catalogo")
         )
+
+
+    produtos = Produto.objects.filter(
+        id__in=carrinho.keys()
+    )
 
 
     form = PedidoForm(request.POST or None)
@@ -63,37 +70,36 @@ def criar_pedido(request):
         )
 
 
-        produtos = Produto.objects.filter(
-            id__in=carrinho.keys()
-        )
-
-
         total = 0
 
 
-    for produto in produtos:
+        for produto in produtos:
 
-        quantidade = carrinho[str(produto.id)]
-
-
-        if quantidade > produto.quantidadeEstoque:
-
-         return HttpResponseRedirect(
-            reverse("pedido:carrinho")
-        )
+            quantidade = carrinho[str(produto.id)]
 
 
-        total += produto.precoUnitario * quantidade
+            if quantidade > produto.quantidadeEstoque:
+                return HttpResponseRedirect(
+                    reverse("pedido:carrinho")
+                )
+
+
+            total += produto.precoUnitario * quantidade
 
 
         pedido.valorTotal = total
 
-        ultimo_pedido = Pedido.objects.order_by("-numero_pedido").first()
+
+        ultimo_pedido = Pedido.objects.order_by(
+            "-numero_pedido"
+        ).first()
+
 
         if ultimo_pedido:
             pedido.numero_pedido = ultimo_pedido.numero_pedido + 1
         else:
             pedido.numero_pedido = 1
+
 
         pedido.save()
 
@@ -102,6 +108,7 @@ def criar_pedido(request):
 
             quantidade = carrinho[str(produto.id)]
 
+
             ItemPedido.objects.create(
                 pedido=pedido,
                 produto=produto,
@@ -109,6 +116,8 @@ def criar_pedido(request):
                 valorUnitario=produto.precoUnitario,
                 subtotal=produto.precoUnitario * quantidade
             )
+
+
             produto.quantidadeEstoque -= quantidade
             produto.save()
 
@@ -130,16 +139,6 @@ def criar_pedido(request):
         {
             "pagina": "formulario",
             "form": form
-        }
-    )
-
-
-    return render(
-        request,
-        TEMPLATE_PEDIDO,
-        {
-            "pagina": "formulario",
-            "form": form,
         }
     )
 
