@@ -5,14 +5,7 @@ from django.core.exceptions import ValidationError
 # Create your models here.
 
 class Categoria(models.Model):
-    NOME_CHOICES = [
-        ('Flor', 'Flores'),
-        ('Arranjo', 'Arranjos'),
-        ('Muda', 'Mudas'),
-        ('Ferramenta', 'Ferramentas'),
-        ('Outro', 'Outros'),
-    ]
-    nome_categoria = models.CharField(max_length=100, choices=NOME_CHOICES, unique=True)
+    nome_categoria = models.CharField(max_length=100, unique=True)
     descricao_categoria = models.TextField()
 
     def __str__(self):

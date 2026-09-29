@@ -28,7 +28,7 @@
         {% if produtos %}<div class="product-grid">{% for produto in produtos %}
             <article class="product-card">
                 <div class="product-visual" aria-hidden="true">✿</div>
-                <div class="product-card-body"><p class="product-category">{{ produto.categoria.get_nome_categoria_display }}</p><h3>{{ produto.nome_produto }}</h3><p class="product-description">{{ produto.descricao_produto|truncatewords:15 }}</p><div class="product-card-bottom"><strong>R$ {{ produto.precoUnitario|floatformat:2 }}</strong><a href="{% url 'produto:detalhe_produto' produto.pk %}">Ver detalhes →</a></div>{% if produto.quantidadeEstoque > 0 %}<a class="card-cart-link" href="{% url 'pedido:adicionar_carrinho' produto.pk %}">Adicionar ao carrinho</a>{% else %}<span class="stock-badge unavailable">Produto esgotado</span>{% endif %}</div>
+                <div class="product-card-body"><p class="product-category">{{ produto.categoria.nome_categoria }}</p><h3>{{ produto.nome_produto }}</h3><p class="product-description">{{ produto.descricao_produto|truncatewords:15 }}</p><div class="product-card-bottom"><strong>R$ {{ produto.precoUnitario|floatformat:2 }}</strong><a href="{% url 'produto:detalhe_produto' produto.pk %}">Ver detalhes →</a></div>{% if produto.quantidadeEstoque > 0 %}<a class="card-cart-link" href="{% url 'pedido:adicionar_carrinho' produto.pk %}">Adicionar ao carrinho</a>{% else %}<span class="stock-badge unavailable">Produto esgotado</span>{% endif %}</div>
             </article>
         {% endfor %}</div>{% else %}<div class="empty"><h3>Novidades em breve</h3><p>Nosso catálogo está sendo preparado.</p><a class="button" href="{% url 'produto:catalogo' %}">Visitar catálogo</a></div>{% endif %}
     </div>

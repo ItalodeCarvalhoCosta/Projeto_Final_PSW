@@ -3,26 +3,26 @@
 {% block content %}
 <div class="page-heading">
     <p class="section-kicker">{% if pagina == "detalhe_produto" %}Nosso catálogo{% else %}Produtos e categorias{% endif %}</p>
-    <h1>{% if pagina == "listar_categorias" %}Categorias{% elif pagina == "detalhe_categoria" %}{{ categoria.get_nome_categoria_display }}{% elif pagina == "listar_produtos" %}Produtos{% elif pagina == "detalhe_produto" %}{{ produto.nome_produto }}{% elif pagina == "formulario_categoria" %}{% if categoria %}Editar categoria{% else %}Criar categoria{% endif %}{% elif pagina == "formulario_produto" %}{% if produto %}Editar produto{% else %}Criar produto{% endif %}{% else %}Confirmar exclusão{% endif %}</h1>
+    <h1>{% if pagina == "listar_categorias" %}Categorias{% elif pagina == "detalhe_categoria" %}{{ categoria.nome_categoria }}{% elif pagina == "listar_produtos" %}Produtos{% elif pagina == "detalhe_produto" %}{{ produto.nome_produto }}{% elif pagina == "formulario_categoria" %}{% if categoria %}Editar categoria{% else %}Criar categoria{% endif %}{% elif pagina == "formulario_produto" %}{% if produto %}Editar produto{% else %}Criar produto{% endif %}{% else %}Confirmar exclusão{% endif %}</h1>
 </div>
 <nav class="toolbar" aria-label="Navegação de produtos"><a href="{% url 'produto:catalogo' %}">Catálogo</a>{% if perms.produto.add_produto %}<a href="{% url 'produto:criar_produto' %}">Novo produto</a>{% endif %}{% if perms.produto.view_categoria %}<a href="{% url 'produto:listar_categorias' %}">Categorias</a>{% endif %}</nav>
 {% if pagina == "listar_categorias" %}
     {% if perms.produto.add_categoria %}<p><a class="button" href="{% url 'produto:criar_categoria' %}">Nova categoria</a></p>{% endif %}
-    {% if categorias %}<ul class="info-list">{% for categoria in categorias %}<li><a href="{% url 'produto:detalhe_categoria' categoria.id %}">{{ categoria.get_nome_categoria_display }}</a></li>{% endfor %}</ul>{% else %}<div class="empty"><h2>Nenhuma categoria cadastrada.</h2></div>{% endif %}
+    {% if categorias %}<ul class="info-list">{% for categoria in categorias %}<li><a href="{% url 'produto:detalhe_categoria' categoria.id %}">{{ categoria.nome_categoria }}</a></li>{% endfor %}</ul>{% else %}<div class="empty"><h2>Nenhuma categoria cadastrada.</h2></div>{% endif %}
 {% elif pagina == "detalhe_categoria" %}
     <section class="panel"><p>{{ categoria.descricao_categoria }}</p><div class="actions">{% if perms.produto.change_categoria %}<a href="{% url 'produto:editar_categoria' categoria.id %}">Editar</a>{% endif %}{% if perms.produto.delete_categoria %}<a href="{% url 'produto:excluir_categoria' categoria.id %}">Excluir</a>{% endif %}</div></section>
     <h2>Produtos</h2><ul class="info-list">{% for produto in categoria.produtos.all %}<li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a></li>{% empty %}<li>Nenhum produto nesta categoria.</li>{% endfor %}</ul>
 {% elif pagina == "formulario_categoria" %}
     <form class="panel" method="post">{% csrf_token %}{{ form.as_p }}<button type="submit">Salvar categoria</button></form>
 {% elif pagina == "excluir_categoria" %}
-    <section class="panel danger-panel"><h2>Excluir {{ categoria.get_nome_categoria_display }}?</h2><p>Essa ação não pode ser desfeita.</p><form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form></section>
+    <section class="panel danger-panel"><h2>Excluir {{ categoria.nome_categoria }}?</h2><p>Essa ação não pode ser desfeita.</p><form method="post">{% csrf_token %}<button type="submit">Confirmar exclusão</button></form></section>
 {% elif pagina == "listar_produtos" %}
     {% if produtos %}<ul class="info-list">{% for produto in produtos %}<li><a href="{% url 'produto:detalhe_produto' produto.id %}">{{ produto.nome_produto }}</a> — R$ {{ produto.precoUnitario|floatformat:2 }}</li>{% endfor %}</ul>{% else %}<div class="empty"><h2>Nenhum produto cadastrado.</h2></div>{% endif %}
 {% elif pagina == "detalhe_produto" %}
     <section class="product-detail">
         <div class="product-detail-visual" aria-hidden="true">✿</div>
         <div class="product-detail-copy">
-            <p class="section-kicker">{{ produto.categoria.get_nome_categoria_display }}</p>
+            <p class="section-kicker">{{ produto.categoria.nome_categoria }}</p>
             <p class="product-detail-price">R$ {{ produto.precoUnitario|floatformat:2 }}</p>
             <p>{{ produto.descricao_produto }}</p>
             <div class="product-detail-facts">

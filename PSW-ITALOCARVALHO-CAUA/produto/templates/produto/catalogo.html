@@ -15,7 +15,7 @@
     <article class="product-card">
         <div class="product-visual" aria-hidden="true">✿</div>
         <div class="product-card-body">
-            <p class="product-category">{{ produto.categoria.get_nome_categoria_display }}</p>
+            <p class="product-category">{{ produto.categoria.nome_categoria }}</p>
             <h3>{{ produto.nome_produto }}</h3>
             <p class="product-description">{{ produto.descricao_produto|truncatewords:18 }}</p>
             <p>{% if produto.quantidadeEstoque > 0 %}<span class="stock-badge">Em estoque</span>{% else %}<span class="stock-badge unavailable">Produto esgotado</span>{% endif %}</p>
