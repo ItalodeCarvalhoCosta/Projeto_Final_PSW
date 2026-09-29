@@ -1,4 +1,4 @@
-# Projeto_Final_PSW#  Floricultura Aurora 🌺
+# Projeto_Final_PSW#  Floricultura Aurora 
 
 Sistema web desenvolvido para gerenciamento de vendas de uma floricultura, permitindo organizar produtos, categorias, usuários e pedidos através de uma única plataforma.
 
