@@ -1,7 +1,8 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import Group
 from django.core.exceptions import PermissionDenied
 from django.views.decorators.http import require_POST
 from .forms import CriarUsuarioForm, UsuarioForm
@@ -12,8 +13,9 @@ from django.contrib.auth import authenticate, login, logout
 TEMPLATE_USUARIO = "usuario/usuario.html"
 
 @login_required
-@permission_required("usuario.view_usuario", raise_exception=True)
 def listar_usuarios(request):
+    if not request.user.has_perm("usuario.view_usuario"):
+        raise PermissionDenied
     usuarios = Usuario.objects.all()
 
     return render(
@@ -50,6 +52,8 @@ def criar_usuario(request):
     form = CriarUsuarioForm(request.POST or None)
     if form.is_valid():
         usuario = form.save()
+        grupo_cliente = Group.objects.get(name="Cliente")
+        usuario.groups.add(grupo_cliente)
         if not request.user.is_authenticated:
             return redirect("usuario:login")
         if not request.user.has_perm("usuario.view_usuario"):
@@ -99,8 +103,9 @@ def editar_usuario(request, usuario_id):
     )
 
 @login_required
-@permission_required("usuario.delete_usuario", raise_exception=True)
 def excluir_usuario(request, usuario_id):
+    if not request.user.has_perm("usuario.delete_usuario"):
+        raise PermissionDenied
     usuario = get_object_or_404(
         Usuario,
         pk=usuario_id

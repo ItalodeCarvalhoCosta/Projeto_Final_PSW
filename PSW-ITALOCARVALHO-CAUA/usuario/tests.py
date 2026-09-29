@@ -1,4 +1,4 @@
-from django.contrib.auth.models import Permission, User
+from django.contrib.auth.models import Group, Permission, User
 from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
@@ -69,6 +69,26 @@ class AccessTests(TestCase):
         self.assertEqual(self.client.get(reverse("pedido:detalhe_pedido", args=[self.orders[0].pk])).status_code, 200)
         self.assertEqual(self.client.get(reverse("pedido:detalhe_pedido", args=[self.orders[1].pk])).status_code, 404)
 
+    def test_customer_group_sees_only_own_orders(self):
+        customer_group = Group.objects.create(name="Cliente")
+        self.customer.groups.add(customer_group)
+        self.client.force_login(self.customer)
+
+        response = self.client.get(reverse("pedido:listar_pedidos"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Meus pedidos")
+        self.assertNotContains(response, "Todos os pedidos")
+        self.assertQuerySetEqual(response.context["pedidos"], [self.orders[0]])
+
+    def test_order_change_and_delete_permissions_are_limited_to_owner(self):
+        self.customer.user_permissions.add(*Permission.objects.filter(
+            content_type__app_label="pedido", codename__in=["change_pedido", "delete_pedido"]
+        ))
+        self.client.force_login(self.customer)
+        for route in ("pedido:editar_pedido", "pedido:excluir_pedido"):
+            response = self.client.get(reverse(route, args=[self.orders[1].pk]))
+            self.assertEqual(response.status_code, 404)
+
     def test_customer_can_edit_own_profile_without_granting_privileges(self):
         self.client.force_login(self.customer)
         response = self.client.post(reverse("usuario:editar_usuario", args=[self.customer.pk]), {
@@ -126,6 +146,7 @@ class AccessTests(TestCase):
         self.assertQuerySetEqual(response.context["pedidos"], [self.orders[0]])
 
     def test_signup_redirects_to_login_and_creates_unprivileged_account(self):
+        Group.objects.create(name="Cliente")
         response = self.client.post(reverse("usuario:criar_usuario"), {
             "username": "novo", "cpf": "333", "telefone": "333",
             "password1": "SenhaTeste!482", "password2": "SenhaTeste!482", "is_superuser": "on"
@@ -134,6 +155,8 @@ class AccessTests(TestCase):
         account = Usuario.objects.get(username="novo")
         self.assertFalse(account.is_superuser)
         self.assertFalse(account.is_staff)
+        self.assertTrue(account.groups.filter(name="Cliente").exists())
+        self.assertTrue(Group.objects.filter(name="Cliente").exists())
         self.assertTrue(self.client.login(username="novo", password="SenhaTeste!482"))
         self.assertEqual(self.client.get(reverse("usuario:detalhe_usuario", args=[account.pk])).status_code, 200)
 

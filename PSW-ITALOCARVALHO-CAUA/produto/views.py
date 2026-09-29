@@ -1,7 +1,8 @@
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required
+from django.core.exceptions import PermissionDenied
 from .forms import CategoriaForm, ProdutoForm
 from .models import Categoria, Produto
 
@@ -11,8 +12,9 @@ TEMPLATE_PRODUTO = "produto/produto.html"
 
 
 @login_required
-@permission_required("produto.view_categoria", raise_exception=True)
 def listar_categorias(request):
+    if not request.user.has_perm("produto.view_categoria"):
+        raise PermissionDenied
     categorias = Categoria.objects.all()
 
     return render(
@@ -25,8 +27,9 @@ def listar_categorias(request):
     )
 
 @login_required
-@permission_required("produto.view_categoria", raise_exception=True)
 def detalhe_categoria(request, categoria_id):
+    if not request.user.has_perm("produto.view_categoria"):
+        raise PermissionDenied
     categoria = get_object_or_404(
         Categoria,
         pk=categoria_id
@@ -42,8 +45,9 @@ def detalhe_categoria(request, categoria_id):
     )
 
 @login_required
-@permission_required("produto.add_categoria", raise_exception=True)
 def criar_categoria(request):
+    if not request.user.has_perm("produto.add_categoria"):
+        raise PermissionDenied
     form = CategoriaForm(request.POST or None)
     if form.is_valid():
         form.save()
@@ -58,8 +62,9 @@ def criar_categoria(request):
     )
 
 @login_required
-@permission_required("produto.change_categoria", raise_exception=True)
 def editar_categoria(request, categoria_id):
+    if not request.user.has_perm("produto.change_categoria"):
+        raise PermissionDenied
     categoria = get_object_or_404(
         Categoria,
         pk=categoria_id
@@ -86,8 +91,9 @@ def editar_categoria(request, categoria_id):
     )
 
 @login_required
-@permission_required("produto.delete_categoria", raise_exception=True)
 def excluir_categoria(request, categoria_id):
+    if not request.user.has_perm("produto.delete_categoria"):
+        raise PermissionDenied
     categoria = get_object_or_404(
         Categoria,
         pk=categoria_id
@@ -139,8 +145,9 @@ def detalhe_produto(request, produto_id):
     )
 
 @login_required
-@permission_required("produto.add_produto", raise_exception=True)
 def criar_produto(request):
+    if not request.user.has_perm("produto.add_produto"):
+        raise PermissionDenied
     form = ProdutoForm(request.POST or None, request.FILES or None)
     if form.is_valid():
         produto = form.save()
@@ -158,8 +165,9 @@ def criar_produto(request):
     )
 
 @login_required
-@permission_required("produto.change_produto", raise_exception=True)
 def editar_produto(request, produto_id):
+    if not request.user.has_perm("produto.change_produto"):
+        raise PermissionDenied
     produto = get_object_or_404(
         Produto,
         pk=produto_id
@@ -186,8 +194,9 @@ def editar_produto(request, produto_id):
     )
 
 @login_required
-@permission_required("produto.delete_produto", raise_exception=True)
 def excluir_produto(request, produto_id):
+    if not request.user.has_perm("produto.delete_produto"):
+        raise PermissionDenied
     produto = get_object_or_404(
         Produto,
         pk=produto_id
